@@ -24,4 +24,10 @@ describe('CommentRepository interface', () => {
     await expect(commentRepository.verifyCommentOwner('comment-123', 'user-123'))
       .rejects.toThrow('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
+
+  it('should throw error when invoke abstract behavior getCommentsByThreadId', async () => {
+    const commentRepository = new CommentRepository();
+    await expect(commentRepository.getCommentsByThreadId('thread-123'))
+      .rejects.toThrow('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  });
 });
