@@ -22,10 +22,6 @@ exports.up = (pgm) => {
       references: 'threads(id)',
       onDelete: 'CASCADE',
     },
-    date: {
-      type: 'TEXT',
-      notNull: true,
-    },
     is_delete: {
       type: 'BOOLEAN',
       notNull: true,
