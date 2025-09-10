@@ -60,10 +60,6 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    if (result.rows.length === 0) {
-      console.log('TAH ERROR');
-    }
-
     if (!result.rowCount) {
       throw new NotFoundError('Comment tidak ditemukan');
     }
@@ -73,6 +69,30 @@ class CommentRepositoryPostgres extends CommentRepository {
       throw new AuthorizationError('anda tidak berhak mengakses resource ini');
     }
   }
+
+  async getCommentsByThreadId(threadId) {
+  const query = {
+    text: `
+      SELECT comments.id, comments.content, comments.date, comments.is_delete, 
+             users.username
+      FROM comments
+      LEFT JOIN users ON users.id = comments.owner_id
+      WHERE comments.thread_id = $1
+      ORDER BY comments.date ASC
+    `,
+    values: [threadId],
+  };
+
+  const result = await this._pool.query(query);
+
+  // kalau comment sudah dihapus, biasanya tetap dikembalikan tapi diganti "[komentar telah dihapus]"
+  return result.rows.map((row) => ({
+    id: row.id,
+    username: row.username,
+    date: row.date,
+    content: row.is_delete ? '**komentar telah dihapus**' : row.content,
+  }));
+}
 }
 
 module.exports = CommentRepositoryPostgres;

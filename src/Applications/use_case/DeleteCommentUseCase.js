@@ -6,7 +6,6 @@ class DeleteCommentUseCase {
 
   async execute({ commentId, threadId, ownerId }) {
     try {
-      console.log('ola', commentId, threadId, ownerId)
       await this._threadRepository.verifyAvailableThread(threadId);
       await this._commentRepository.verifyAvailableComment(commentId);
       await this._commentRepository.verifyCommentOwner(commentId, ownerId);
