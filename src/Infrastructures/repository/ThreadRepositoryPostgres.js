@@ -17,7 +17,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     };
 
     const result = await this._pool.query(query);
-      console.log('[DEBUG Repo] result insert:', result.rows);
+    console.log('[DEBUG Repo] result insert:', result.rows);
 
     return new AddedThread({
       id: result.rows[0].id,
@@ -35,9 +35,28 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      console.log('KOSONG')
       throw new NotFoundError('Thread tidak ditemukan');
     }
+  }
+
+  async getThreadById(threadId) {
+    const query = {
+      text: `
+        SELECT threads.id, threads.title, threads.body, threads.date, users.username
+        FROM threads
+        JOIN users ON users.id = threads.owner_id
+        WHERE threads.id = $1
+      `,
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Thread tidak ditemukan');
+    }
+
+    return result.rows[0];
   }
 }
 

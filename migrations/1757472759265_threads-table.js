@@ -20,6 +20,11 @@ exports.up = (pgm) => {
       references: 'users(id)',
       onDelete: 'CASCADE',
     },
+    date: {
+      type: 'TIMESTAMP WITH TIME ZONE',
+      notNull: true,
+      default: pgm.func('NOW()'),
+    },
   });
 };
 

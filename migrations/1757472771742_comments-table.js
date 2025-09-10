@@ -27,6 +27,11 @@ exports.up = (pgm) => {
       notNull: true,
       default: false,
     },
+    date: {
+      type: 'TIMESTAMP WITH TIME ZONE',
+      notNull: true,
+      default: pgm.func('NOW()'),
+    },
   });
 };
 
