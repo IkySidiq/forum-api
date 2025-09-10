@@ -1,5 +1,5 @@
-// const InvariantError = require('../../Commons/exceptions/InvariantError');
-// const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
 
@@ -18,13 +18,60 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     const result = await this._pool.query(query);
-    console.log('[DEBUG Repo] result insert comment:', result.rows);
 
     return new AddedComment({
       id: result.rows[0].id,
       content: result.rows[0].content,
       owner: result.rows[0].owner_id,
     });
+  }
+
+  async deleteComment(commentId) {
+    const query = {
+      text: 'UPDATE comments SET is_delete = true WHERE id = $1 RETURNING id',
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Comment tidak ditemukan');
+    }
+  }
+
+  async verifyAvailableComment(commentId) {
+    const query = {
+      text: 'SELECT id FROM comments WHERE id = $1',
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Comment tidak ditemukan');
+    }
+  }
+
+  async verifyCommentOwner(commentId, ownerId) {
+    const query = {
+      text: 'SELECT owner_id FROM comments WHERE id = $1',
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (result.rows.length === 0) {
+      console.log('TAH ERROR');
+    }
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Comment tidak ditemukan');
+    }
+
+    const comment = result.rows[0];
+    if (comment.owner_id !== ownerId) {
+      throw new AuthorizationError('anda tidak berhak mengakses resource ini');
+    }
   }
 }
 

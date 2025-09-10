@@ -1,4 +1,6 @@
 const InvariantError = require('./InvariantError');
+const NotFoundError = require('./NotFoundError');
+const AuthorizationError = require('./AuthorizationError');
 
 const DomainErrorTranslator = {
   translate(error) {
@@ -30,6 +32,8 @@ DomainErrorTranslator._directories = {
   'ADDING_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat comment karena properti yang dibutuhkan tidak ada'),
   'ADDING_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat comment karena tipe data tidak sesuai'),
   'ADDING_COMMENT.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat comment karena karakter content melebihi batas limit'),
+  'DELETE_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus comment karena properti yang dibutuhkan tidak ada'),
+  'DELETE_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus comment karena tipe data tidak sesuai'),
 };
 
 module.exports = DomainErrorTranslator;
