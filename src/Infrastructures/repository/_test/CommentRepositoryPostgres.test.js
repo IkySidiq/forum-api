@@ -55,4 +55,82 @@ describe('CommentRepositoryPostgres', () => {
       expect(addedComment.owner).toBe(newComment.ownerId);
     });
   });
+
+  describe('deleteComment', () => {
+    it('should throw NotFoundError when comment does not exist', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await expect(commentRepository.deleteComment('comment-xxx'))
+        .rejects.toThrowError('Comment tidak ditemukan');
+    });
+
+    it('should mark comment as deleted when comment exists', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'isi komen',
+        threadId: 'thread-123',
+        owner: 'user-123',
+      });
+
+      await commentRepository.deleteComment('comment-123');
+
+      const comments = await CommentsTableTestHelper.findCommentById('comment-123');
+      expect(comments[0].is_delete).toBe(true);
+    });
+  });
+
+  describe('verifyAvailableComment', () => {
+    it('should throw NotFoundError when comment does not exist', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await expect(commentRepository.verifyAvailableComment('comment-xxx'))
+        .rejects.toThrowError('Comment tidak ditemukan');
+    });
+
+    it('should not throw error when comment exists', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'isi komen',
+        threadId: 'thread-123',
+        owner: 'user-123',
+      });
+
+      await expect(commentRepository.verifyAvailableComment('comment-123'))
+        .resolves.not.toThrowError();
+    });
+  });
+
+  describe('verifyCommentOwner', () => {
+    it('should throw NotFoundError when comment does not exist', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await expect(commentRepository.verifyCommentOwner('comment-xxx', 'user-123'))
+        .rejects.toThrowError('Comment tidak ditemukan');
+    });
+
+    it('should throw AuthorizationError when owner is not the same', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'komen',
+        threadId: 'thread-123',
+        owner: 'user-123',
+      });
+
+      await expect(commentRepository.verifyCommentOwner('comment-123', 'user-xxx'))
+        .rejects.toThrowError('anda tidak berhak mengakses resource ini');
+    });
+
+    it('should not throw error when owner matches', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'komen',
+        threadId: 'thread-123',
+        owner: 'user-123',
+      });
+
+      await expect(commentRepository.verifyCommentOwner('comment-123', 'user-123'))
+        .resolves.not.toThrowError();
+    });
+  });
 });
