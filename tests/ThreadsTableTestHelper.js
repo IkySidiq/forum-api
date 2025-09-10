@@ -7,12 +7,12 @@ const ThreadsTableTestHelper = {
     title = 'Default Thread Title',
     body = 'Default thread body',
     owner = 'user-123',
+    date = new Date().toISOString(),
   }) {
     const query = {
-      text: 'INSERT INTO threads (id, title, body, owner_id) VALUES($1, $2, $3, $4)',
-      values: [id, title, body, owner],
+      text: 'INSERT INTO threads (id, title, body, owner_id, date) VALUES($1, $2, $3, $4, $5)',
+      values: [id, title, body, owner, date],
     };
-
     await pool.query(query);
   },
 
@@ -21,7 +21,6 @@ const ThreadsTableTestHelper = {
       text: 'SELECT * FROM threads WHERE id = $1',
       values: [id],
     };
-
     const result = await pool.query(query);
     return result.rows;
   },
