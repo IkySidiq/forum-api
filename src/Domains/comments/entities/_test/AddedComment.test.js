@@ -40,4 +40,14 @@ describe('AddedComment entity', () => {
         .toThrow('ADDED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     });
   });
+
+  it('should throw error when content exceeds 500 characters', () => {
+    const longContent = 'a'.repeat(501);
+
+    expect(() => new AddedComment({
+      id: 'comment-123',
+      content: longContent,
+      owner: 'user-123',
+    })).toThrowError('ADDED_COMMENT.CONTENT_LIMIT_CHAR');
+  });
 });
