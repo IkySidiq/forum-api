@@ -5,17 +5,17 @@ const container = require('../../container');
 const createServer = require('../createServer');
 
 describe('/threads endpoint', () => {
-  afterAll(async () => {
+  afterAll(async() => {
     await pool.end();
   });
 
-  afterEach(async () => {
+  afterEach(async() => {
     await UsersTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
   });
 
   describe('when GET /threads/{threadId}', () => {
-    it('should response 200 and return thread detail including comments and replies', async () => {
+    it('should response 200 and return thread detail including comments and replies', async() => {
       const server = await createServer(container);
 
       // Register + login user
@@ -108,7 +108,7 @@ describe('/threads endpoint', () => {
       expect(thread.comments[1].replies).toEqual([]);
     });
 
-    it('should response 404 when thread not found', async () => {
+    it('should response 404 when thread not found', async() => {
       const server = await createServer(container);
 
       const response = await server.inject({

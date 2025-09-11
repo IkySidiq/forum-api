@@ -4,7 +4,7 @@ const JwtTokenManager = require('../JwtTokenManager');
 
 describe('JwtTokenManager', () => {
   describe('createAccessToken function', () => {
-    it('should create accessToken correctly', async () => {
+    it('should create accessToken correctly', async() => {
       // Arrange
       const payload = {
         username: 'dicoding',
@@ -24,7 +24,7 @@ describe('JwtTokenManager', () => {
   });
 
   describe('createRefreshToken function', () => {
-    it('should create refreshToken correctly', async () => {
+    it('should create refreshToken correctly', async() => {
       // Arrange
       const payload = {
         username: 'dicoding',
@@ -44,7 +44,7 @@ describe('JwtTokenManager', () => {
   });
 
   describe('verifyRefreshToken function', () => {
-    it('should throw InvariantError when verification failed', async () => {
+    it('should throw InvariantError when verification failed', async() => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(Jwt.token);
       const accessToken = await jwtTokenManager.createAccessToken({ username: 'dicoding' });
@@ -55,7 +55,7 @@ describe('JwtTokenManager', () => {
         .toThrow(InvariantError);
     });
 
-    it('should not throw InvariantError when refresh token verified', async () => {
+    it('should not throw InvariantError when refresh token verified', async() => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(Jwt.token);
       const refreshToken = await jwtTokenManager.createRefreshToken({ username: 'dicoding' });
@@ -68,7 +68,7 @@ describe('JwtTokenManager', () => {
   });
 
   describe('decodePayload function', () => {
-    it('should decode payload correctly', async () => {
+    it('should decode payload correctly', async() => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(Jwt.token);
       const accessToken = await jwtTokenManager.createAccessToken({ username: 'dicoding' });

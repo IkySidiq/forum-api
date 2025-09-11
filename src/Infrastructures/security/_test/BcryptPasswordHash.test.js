@@ -4,7 +4,7 @@ const BcryptEncryptionHelper = require('../BcryptPasswordHash');
 
 describe('BcryptEncryptionHelper', () => {
   describe('hash function', () => {
-    it('should encrypt password correctly', async () => {
+    it('should encrypt password correctly', async() => {
       // Arrange
       const spyHash = jest.spyOn(bcrypt, 'hash');
       const bcryptEncryptionHelper = new BcryptEncryptionHelper(bcrypt);
@@ -20,7 +20,7 @@ describe('BcryptEncryptionHelper', () => {
   });
 
   describe('comparePassword function', () => {
-    it('should throw AuthenticationError if password not match', async () => {
+    it('should throw AuthenticationError if password not match', async() => {
       // Arrange
       const bcryptEncryptionHelper = new BcryptEncryptionHelper(bcrypt);
 
@@ -30,7 +30,7 @@ describe('BcryptEncryptionHelper', () => {
         .toThrow(AuthenticationError);
     });
 
-    it('should not return AuthenticationError if password match', async () => {
+    it('should not return AuthenticationError if password match', async() => {
       // Arrange
       const bcryptEncryptionHelper = new BcryptEncryptionHelper(bcrypt);
       const plainPassword = 'secret';

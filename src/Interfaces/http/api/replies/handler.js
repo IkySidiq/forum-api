@@ -15,7 +15,7 @@ class RepliesHandler {
 
     const addReplyUseCase = this._container.getInstance(AddReplyUseCase.name);
 
-    const addedReply = await addReplyUseCase.execute({ content, commentId, ownerId });
+    const addedReply = await addReplyUseCase.execute({ content, commentId, ownerId, threadId });
     console.log('bara', addedReply);
 
     const response = h.response({

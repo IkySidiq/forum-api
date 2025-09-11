@@ -17,15 +17,18 @@ class GetThreadDetailUseCase {
 
     // mapping comment + ambil replies
     const commentsWithReplies = await Promise.all(
-      comments.map(async (comment) => {
+      comments.map(async(comment) => {
         const rawReplies = await this._replyRepository.getRepliesByCommentId(comment.id);
 
-        const replies = rawReplies.map((reply) => ({
-          id: reply.id,
-          content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
-          date: reply.date,
-          username: reply.username,
-        }));
+        // hanya ambil reply yang tidak dihapus
+        const replies = rawReplies
+          .filter(reply => !reply.is_delete)
+          .map((reply) => ({
+            id: reply.id,
+            content: reply.content,
+            date: reply.date,
+            username: reply.username,
+          }));
 
         return {
           id: comment.id,
@@ -34,7 +37,7 @@ class GetThreadDetailUseCase {
           content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
           replies,
         };
-      })
+      }),
     );
 
     return {

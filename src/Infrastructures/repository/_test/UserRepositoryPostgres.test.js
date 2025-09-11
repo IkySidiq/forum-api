@@ -6,16 +6,16 @@ const pool = require('../../database/postgres/pool');
 const UserRepositoryPostgres = require('../UserRepositoryPostgres');
 
 describe('UserRepositoryPostgres', () => {
-  afterEach(async () => {
+  afterEach(async() => {
     await UsersTableTestHelper.cleanTable();
   });
 
-  afterAll(async () => {
+  afterAll(async() => {
     await pool.end();
   });
 
   describe('verifyAvailableUsername function', () => {
-    it('should throw InvariantError when username not available', async () => {
+    it('should throw InvariantError when username not available', async() => {
       // Arrange
       await UsersTableTestHelper.addUser({ username: 'dicoding' }); // memasukan user baru dengan username dicoding
       const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
@@ -24,7 +24,7 @@ describe('UserRepositoryPostgres', () => {
       await expect(userRepositoryPostgres.verifyAvailableUsername('dicoding')).rejects.toThrowError(InvariantError);
     });
 
-    it('should not throw InvariantError when username available', async () => {
+    it('should not throw InvariantError when username available', async() => {
       // Arrange
       const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
 
@@ -34,7 +34,7 @@ describe('UserRepositoryPostgres', () => {
   });
 
   describe('addUser function', () => {
-    it('should persist register user and return registered user correctly', async () => {
+    it('should persist register user and return registered user correctly', async() => {
       // Arrange
       const registerUser = new RegisterUser({
         username: 'dicoding',
@@ -52,7 +52,7 @@ describe('UserRepositoryPostgres', () => {
       expect(users).toHaveLength(1);
     });
 
-    it('should return registered user correctly', async () => {
+    it('should return registered user correctly', async() => {
       // Arrange
       const registerUser = new RegisterUser({
         username: 'dicoding',
@@ -85,7 +85,7 @@ describe('UserRepositoryPostgres', () => {
         .toThrowError(InvariantError);
     });
 
-    it('should return username password when user is found', async () => {
+    it('should return username password when user is found', async() => {
       // Arrange
       const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
       await UsersTableTestHelper.addUser({
@@ -100,7 +100,7 @@ describe('UserRepositoryPostgres', () => {
   });
 
   describe('getIdByUsername', () => {
-    it('should throw InvariantError when user not found', async () => {
+    it('should throw InvariantError when user not found', async() => {
       // Arrange
       const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
 
@@ -110,7 +110,7 @@ describe('UserRepositoryPostgres', () => {
         .toThrowError(InvariantError);
     });
 
-    it('should return user id correctly', async () => {
+    it('should return user id correctly', async() => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-321', username: 'dicoding' });
       const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});

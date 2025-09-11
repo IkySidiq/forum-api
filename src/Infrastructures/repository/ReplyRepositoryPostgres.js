@@ -10,17 +10,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     this._idGenerator = idGenerator;
   }
 
-  async verifyComment(commentId) {
-    const query = {
-      text: 'SELECT id FROM comments WHERE id = $1',
-      values: [commentId],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new NotFoundError('Comment tidak ditemukan');
-    }
-  }
-
   async addReply({ content }, commentId, ownerId) {
     const id = `reply-${this._idGenerator()}`;
     const query = {
@@ -38,7 +27,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
   async getRepliesByCommentId(commentId) {
     const query = {
       text: `
-        SELECT replies.id, replies.content, replies.date, users.username, replies.is_delete
+        SELECT replies.id, replies.content, replies.date, replies.is_delete, users.username
         FROM replies
         JOIN users ON users.id = replies.owner_id
         WHERE replies.comment_id = $1
@@ -46,17 +35,17 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       `,
       values: [commentId],
     };
+
     const result = await this._pool.query(query);
-    if (!result.rowCount) return []; // tambahan untuk empty array branch
-    return result.rows.map((row) => ({
-      id: row.id,
-      content: row.is_delete ? '**balasan telah dihapus**' : row.content,
-      date: row.date,
-      username: row.username,
+
+    return result.rows.map((reply) => ({
+      id: reply.id,
+      content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
+      date: reply.date,
+      username: reply.username,
     }));
   }
 
-  // === Implementasi kontrak tambahan ===
   async verifyReply(replyId) {
     const query = {
       text: 'SELECT id FROM replies WHERE id = $1',
@@ -74,9 +63,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [replyId],
     };
     const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new NotFoundError('Balasan tidak ditemukan');
-    }
     if (result.rows[0].owner_id !== ownerId) {
       throw new AuthorizationError('Anda tidak berhak menghapus balasan ini');
     }
@@ -87,7 +73,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       text: 'UPDATE replies SET is_delete = true WHERE id = $1',
       values: [replyId],
     };
-    return this._pool.query(query); // tambahkan return supaya coverage 100%
+    return this._pool.query(query);
   }
 }
 

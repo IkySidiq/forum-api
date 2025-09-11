@@ -1,7 +1,7 @@
 const EncryptionHelper = require('../PasswordHash');
 
 describe('EncryptionHelper interface', () => {
-  it('should throw error when invoke abstract behavior', async () => {
+  it('should throw error when invoke abstract behavior', async() => {
     // Arrange
     const encryptionHelper = new EncryptionHelper();
 

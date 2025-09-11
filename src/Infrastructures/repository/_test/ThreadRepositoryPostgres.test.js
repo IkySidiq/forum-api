@@ -3,28 +3,27 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('ThreadRepositoryPostgres', () => {
-  beforeEach(async () => {
+  beforeEach(async() => {
     await UsersTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
 
     await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
   });
 
-  afterEach(async () => {
+  afterEach(async() => {
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
   });
 
-  afterAll(async () => {
+  afterAll(async() => {
     await pool.end();
   });
 
   // ========== addThread ==========
   describe('addThread', () => {
-    it('should add thread to database and return AddedThread correctly', async () => {
+    it('should add thread to database and return AddedThread correctly', async() => {
       const mockIdGenerator = () => '123';
       const threadRepository = new ThreadRepositoryPostgres(pool, mockIdGenerator);
 
@@ -47,13 +46,13 @@ describe('ThreadRepositoryPostgres', () => {
 
   // ========== verifyAvailableThread ==========
   describe('verifyAvailableThread', () => {
-    it('should throw NotFoundError when thread does not exist', async () => {
+    it('should throw NotFoundError when thread does not exist', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       await expect(threadRepository.verifyAvailableThread('thread-xxx'))
         .rejects.toThrowError('Thread tidak ditemukan');
     });
 
-    it('should not throw error when thread exists', async () => {
+    it('should not throw error when thread exists', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       const uniqueThreadId = 'thread-verify-123';
 
@@ -71,13 +70,13 @@ describe('ThreadRepositoryPostgres', () => {
 
   // ========== getThreadById ==========
   describe('getThreadById', () => {
-    it('should throw NotFoundError when thread does not exist', async () => {
+    it('should throw NotFoundError when thread does not exist', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       await expect(threadRepository.getThreadById('thread-xxx'))
         .rejects.toThrowError('Thread tidak ditemukan');
     });
 
-    it('should return thread data correctly', async () => {
+    it('should return thread data correctly', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       const uniqueThreadId = 'thread-get-123';
 

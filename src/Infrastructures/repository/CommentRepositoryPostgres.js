@@ -92,6 +92,17 @@ class CommentRepositoryPostgres extends CommentRepository {
       content: row.is_delete ? '**komentar telah dihapus**' : row.content,
     }));
   }
+
+  async verifyComment(commentId) {
+    const query = {
+      text: 'SELECT id FROM comments WHERE id = $1',
+      values: [commentId],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      throw new NotFoundError('Comment tidak ditemukan');
+    }
+  }
 }
 
 module.exports = CommentRepositoryPostgres;

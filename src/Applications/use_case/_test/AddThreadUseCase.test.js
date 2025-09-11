@@ -2,7 +2,7 @@ const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddThreadUseCase = require('../AddThreadUseCase');
 
 describe('AddThreadUseCase', () => {
-  it('should orchestrate the add thread action correctly', async () => {
+  it('should orchestrate the add thread action correctly', async() => {
     // Arrange
     const useCasePayload = {
       ownerId: 'owner-123',
@@ -40,7 +40,7 @@ describe('AddThreadUseCase', () => {
     verifyPayloadSpy.mockRestore();
   });
 
-  it('should throw error when payload is missing required properties', async () => {
+  it('should throw error when payload is missing required properties', async() => {
     // Arrange
     const useCasePayload = {
       ownerId: 'owner-123',

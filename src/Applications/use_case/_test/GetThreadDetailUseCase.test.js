@@ -4,7 +4,7 @@ const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const GetThreadDetailUseCase = require('../GetThreadDetailUseCase');
 
 describe('GetThreadDetailUseCase', () => {
-  it('should orchestrate get thread detail with replies correctly', async () => {
+  it('should orchestrate get thread detail with replies correctly', async() => {
     // payload use case
     const useCasePayload = { threadId: 'thread-123' };
 
@@ -97,12 +97,7 @@ describe('GetThreadDetailUseCase', () => {
               date: mockReplies[0].date,
               username: mockReplies[0].username,
             },
-            {
-              id: mockReplies[1].id,
-              content: '**balasan telah dihapus**',
-              date: mockReplies[1].date,
-              username: mockReplies[1].username,
-            },
+            // ⚠️ reply yang dihapus (mockReplies[1]) gak ikut
           ],
         },
         {
