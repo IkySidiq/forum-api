@@ -34,6 +34,12 @@ DomainErrorTranslator._directories = {
   'ADDING_COMMENT.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat comment karena karakter content melebihi batas limit'),
   'DELETE_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus comment karena properti yang dibutuhkan tidak ada'),
   'DELETE_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus comment karena tipe data tidak sesuai'),
+
+  // REPLIES
+  'ADDING_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply karena properti yang dibutuhkan tidak ada'),
+  'ADDING_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply karena tipe data tidak sesuai'),
+  'ADDING_REPLY.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat reply karena karakter content melebihi batas limit'),
 };
+
 
 module.exports = DomainErrorTranslator;

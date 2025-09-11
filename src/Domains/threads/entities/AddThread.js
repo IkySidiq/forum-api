@@ -8,7 +8,6 @@ class AddThread {
   }
 
   _verifyPayload({ title, body, ownerId }) {
-    console.log('KUNYUK', title, body, ownerId);
     if (!title || !body || !ownerId) {
       throw new Error('ADDING_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
