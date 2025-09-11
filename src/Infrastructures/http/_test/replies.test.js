@@ -162,4 +162,113 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
       expect(responseJson.message).not.toBe('');
     });
   });
+
+    describe('when DELETE /threads/{threadId}/comments/{commentId}/replies/{replyId}', () => {
+    it('should response 200 and soft delete the reply', async () => {
+      const server = await createServer(container);
+
+      // 1. Register user
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: { username: 'dicoding', password: 'secret', fullname: 'Dicoding Indonesia' },
+      });
+
+      // 2. Login user
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: { username: 'dicoding', password: 'secret' },
+      });
+      const { data: { accessToken } } = JSON.parse(loginResponse.payload);
+
+      // 3. Tambah thread
+      const threadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: { title: 'Judul Thread', body: 'Isi thread' },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const { data: { addedThread } } = JSON.parse(threadResponse.payload);
+
+      // 4. Tambah comment
+      const commentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${addedThread.id}/comments`,
+        payload: { content: 'Ini komentar' },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const { data: { addedComment } } = JSON.parse(commentResponse.payload);
+
+      // 5. Tambah reply
+      const replyResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${addedThread.id}/comments/${addedComment.id}/replies`,
+        payload: { content: 'Ini balasan' },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const { data: { addedReply } } = JSON.parse(replyResponse.payload);
+
+      // 6. Hapus reply
+      const deleteResponse = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${addedThread.id}/comments/${addedComment.id}/replies/${addedReply.id}`,
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      const deleteResponseJson = JSON.parse(deleteResponse.payload);
+      expect(deleteResponse.statusCode).toEqual(200);
+      expect(deleteResponseJson.status).toEqual('success');
+
+      // 7. Pastikan reply sudah soft delete di DB
+      const replies = await RepliesTableTestHelper.findReplyById(addedReply.id);
+      expect(replies).toHaveLength(1);
+      expect(replies[0].is_delete).toBe(true);
+    });
+
+    it('should response 404 when reply not found', async () => {
+      const server = await createServer(container);
+
+      // Register + login
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: { username: 'dicoding', password: 'secret', fullname: 'Dicoding Indonesia' },
+      });
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: { username: 'dicoding', password: 'secret' },
+      });
+      const { data: { accessToken } } = JSON.parse(loginResponse.payload);
+
+      // Tambah thread & comment
+      const threadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: { title: 'Judul Thread', body: 'Isi thread' },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const { data: { addedThread } } = JSON.parse(threadResponse.payload);
+      const commentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${addedThread.id}/comments`,
+        payload: { content: 'Ini komentar' },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const { data: { addedComment } } = JSON.parse(commentResponse.payload);
+
+      // Hapus reply yang tidak ada
+      const deleteResponse = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${addedThread.id}/comments/${addedComment.id}/replies/reply-404`,
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      const deleteResponseJson = JSON.parse(deleteResponse.payload);
+      expect(deleteResponse.statusCode).toEqual(404);
+      expect(deleteResponseJson.status).toEqual('fail');
+      expect(deleteResponseJson.message).not.toBe('');
+    });
+  });
 });
