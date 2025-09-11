@@ -18,9 +18,7 @@ class ThreadsHandler {
 
     const response = h.response({
       status: 'success',
-      data: {
-        addedThread,
-      },
+      data: { addedThread },
     });
     response.code(201);
     return response;
@@ -30,13 +28,12 @@ class ThreadsHandler {
     const { threadId } = request.params;
     const getThreadDetailUseCase = this._container.getInstance(GetThreadDetailUseCase.name);
     const thread = await getThreadDetailUseCase.execute({ threadId });
-    console.log('amis', thread);
+    console.log('amis', JSON.stringify(thread, null, 2));
+
 
     const response = h.response({
       status: 'success',
-      data: {
-        thread,
-      },
+      data: { thread },
     });
     response.code(200);
     return response;

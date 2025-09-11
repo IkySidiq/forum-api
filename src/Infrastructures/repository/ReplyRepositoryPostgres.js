@@ -37,6 +37,28 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       owner: result.rows[0].owner_id,
     });
   }
+
+  async getRepliesByCommentId(commentId) {
+    const query = {
+      text: `
+        SELECT replies.id, replies.content, replies.date, users.username, replies.is_delete
+        FROM replies
+        JOIN users ON users.id = replies.owner_id
+        WHERE replies.comment_id = $1
+        ORDER BY replies.date ASC
+      `,
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows.map((row) => ({
+      id: row.id,
+      content: row.is_delete ? '**balasan telah dihapus**' : row.content,
+      date: row.date,
+      username: row.username,
+    }));
+  }
 }
 
 module.exports = ReplyRepositoryPostgres;
