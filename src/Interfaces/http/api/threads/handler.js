@@ -28,7 +28,7 @@ class ThreadsHandler {
     const { threadId } = request.params;
     const getThreadDetailUseCase = this._container.getInstance(GetThreadDetailUseCase.name);
     const thread = await getThreadDetailUseCase.execute({ threadId });
-    console.log('amis', JSON.stringify(thread, null, 2));
+    console.log('amiss', JSON.stringify(thread, null, 2));
 
 
     const response = h.response({
