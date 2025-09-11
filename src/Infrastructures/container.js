@@ -76,7 +76,7 @@ container.register([
         },
         {
           concrete: nanoid,
-        }
+        },
       ],
     },
   },
@@ -90,7 +90,7 @@ container.register([
         },
         {
           concrete: nanoid,
-        }
+        },
       ],
     },
   },
@@ -104,7 +104,7 @@ container.register([
         },
         {
           concrete: nanoid,
-        }
+        },
       ],
     },
   },
@@ -246,7 +246,7 @@ container.register([
           name: 'commentRepository',
           internal: CommentRepository.name,
         },
-                {
+        {
           name: 'threadRepository',
           internal: ThreadRepository.name,
         },

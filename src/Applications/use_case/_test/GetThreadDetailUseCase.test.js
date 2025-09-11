@@ -4,7 +4,7 @@ const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const GetThreadDetailUseCase = require('../GetThreadDetailUseCase');
 
 describe('GetThreadDetailUseCase', () => {
-  it('should orchestrate get thread detail with replies correctly', async () => {
+  it('should orchestrate get thread detail with replies correctly', async() => {
     // payload use case
     const useCasePayload = { threadId: 'thread-123' };
 

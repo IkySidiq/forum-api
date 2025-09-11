@@ -4,7 +4,7 @@ class AddReplyUseCase {
   constructor({ replyRepository, commentRepository, threadRepository }) {
     this._replyRepository = replyRepository;
     this._commentRepository = commentRepository;
-    this._threadRepository = threadRepository
+    this._threadRepository = threadRepository;
   }
 
   async execute({ content, commentId, ownerId, threadId }) {
@@ -12,8 +12,8 @@ class AddReplyUseCase {
       // Membuat entity AddReply untuk validasi payload
       const addReply = new AddReply({ content, commentId, ownerId });
 
-    // pastikan thread ada
-     await this._threadRepository.verifyAvailableThread(threadId);
+      // pastikan thread ada
+      await this._threadRepository.verifyAvailableThread(threadId);
 
       // Verifikasi apakah commentId valid
       await this._commentRepository.verifyComment(addReply.commentId);
@@ -22,7 +22,7 @@ class AddReplyUseCase {
       return this._replyRepository.addReply(
         { content: addReply.content },
         addReply.commentId,
-        addReply.ownerId
+        addReply.ownerId,
       );
     } catch (error) {
       console.error('[AddReplyUseCase] Error:', error.message, error.stack);

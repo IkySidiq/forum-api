@@ -3,7 +3,7 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const DeleteCommentUseCase = require('../DeleteCommentUseCase');
 
 describe('DeleteCommentUseCase', () => {
-  it('should orchestrate the delete comment action correctly', async () => {
+  it('should orchestrate the delete comment action correctly', async() => {
     // Arrange
     const useCasePayload = {
       commentId: 'comment-123',

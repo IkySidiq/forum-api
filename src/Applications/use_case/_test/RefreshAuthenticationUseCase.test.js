@@ -3,7 +3,7 @@ const AuthenticationTokenManager = require('../../security/AuthenticationTokenMa
 const RefreshAuthenticationUseCase = require('../RefreshAuthenticationUseCase');
 
 describe('RefreshAuthenticationUseCase', () => {
-  it('should throw error if use case payload not contain refresh token', async () => {
+  it('should throw error if use case payload not contain refresh token', async() => {
     // Arrange
     const useCasePayload = {};
     const refreshAuthenticationUseCase = new RefreshAuthenticationUseCase({});
@@ -14,7 +14,7 @@ describe('RefreshAuthenticationUseCase', () => {
       .toThrowError('REFRESH_AUTHENTICATION_USE_CASE.NOT_CONTAIN_REFRESH_TOKEN');
   });
 
-  it('should throw error if refresh token not string', async () => {
+  it('should throw error if refresh token not string', async() => {
     // Arrange
     const useCasePayload = {
       refreshToken: 1,
@@ -27,7 +27,7 @@ describe('RefreshAuthenticationUseCase', () => {
       .toThrowError('REFRESH_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
-  it('should orchestrating the refresh authentication action correctly', async () => {
+  it('should orchestrating the refresh authentication action correctly', async() => {
     // Arrange
     const useCasePayload = {
       refreshToken: 'some_refresh_token',

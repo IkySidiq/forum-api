@@ -17,7 +17,7 @@ class GetThreadDetailUseCase {
 
     // mapping comment + ambil replies
     const commentsWithReplies = await Promise.all(
-      comments.map(async (comment) => {
+      comments.map(async(comment) => {
         const rawReplies = await this._replyRepository.getRepliesByCommentId(comment.id);
 
         // hanya ambil reply yang tidak dihapus
@@ -37,7 +37,7 @@ class GetThreadDetailUseCase {
           content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
           replies,
         };
-      })
+      }),
     );
 
     return {

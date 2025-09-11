@@ -1,7 +1,7 @@
 const createServer = require('../createServer');
 
 describe('HTTP server', () => {
-  it('should response 404 when request unregistered route', async () => {
+  it('should response 404 when request unregistered route', async() => {
     // Arrange
     const server = await createServer({});
 
@@ -15,7 +15,7 @@ describe('HTTP server', () => {
     expect(response.statusCode).toEqual(404);
   });
 
-  it('should handle server error correctly', async () => {
+  it('should handle server error correctly', async() => {
     // Arrange
     const requestPayload = {
       username: 'dicoding',

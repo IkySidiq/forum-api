@@ -63,9 +63,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [replyId],
     };
     const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new NotFoundError('Balasan tidak ditemukan');
-    }
     if (result.rows[0].owner_id !== ownerId) {
       throw new AuthorizationError('Anda tidak berhak menghapus balasan ini');
     }

@@ -4,7 +4,7 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const DeleteReplyUseCase = require('../DeleteReplyUseCase');
 
 describe('DeleteReplyUseCase', () => {
-  it('should orchestrate the delete reply action correctly', async () => {
+  it('should orchestrate the delete reply action correctly', async() => {
     // Arrange
     const useCasePayload = {
       replyId: 'reply-123',
@@ -51,7 +51,7 @@ describe('DeleteReplyUseCase', () => {
       .toHaveBeenCalledWith(useCasePayload.replyId);
   });
 
-  it('should throw error and trigger catch block when repository method fails', async () => {
+  it('should throw error and trigger catch block when repository method fails', async() => {
     // Arrange
     const useCasePayload = {
       replyId: 'reply-123',

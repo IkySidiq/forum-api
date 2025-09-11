@@ -1,8 +1,7 @@
-const AddReply = require('../../../Domains/replies/entities/AddReply');
 const AddReplyUseCase = require('../AddReplyUseCase');
 
 describe('AddReplyUseCase', () => {
-  it('should orchestrate the add reply action correctly', async () => {
+  it('should orchestrate the add reply action correctly', async() => {
     // Arrange
     const useCasePayload = {
       content: 'Isi balasan',
@@ -46,12 +45,12 @@ describe('AddReplyUseCase', () => {
       .toHaveBeenCalledWith(
         { content: useCasePayload.content },
         useCasePayload.commentId,
-        useCasePayload.ownerId
+        useCasePayload.ownerId,
       );
     expect(addedReply).toEqual(expectedAddedReply);
   });
 
-  it('should throw error when payload is missing required properties', async () => {
+  it('should throw error when payload is missing required properties', async() => {
     // Arrange
     const useCasePayload = {
       content: 'Isi balasan',

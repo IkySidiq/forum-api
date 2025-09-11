@@ -2,7 +2,7 @@ const AddComment = require('../../../Domains/comments/entities/AddComment');
 const AddCommentUseCase = require('../AddCommentUseCase');
 
 describe('AddCommentUseCase', () => {
-  it('should orchestrate the add comment action correctly', async () => {
+  it('should orchestrate the add comment action correctly', async() => {
     // Arrange
     const useCasePayload = {
       content: 'Isi komentar',
@@ -48,7 +48,7 @@ describe('AddCommentUseCase', () => {
     verifyPayloadSpy.mockRestore();
   });
 
-  it('should throw error when payload is missing required properties', async () => {
+  it('should throw error when payload is missing required properties', async() => {
     // Arrange
     const useCasePayload = {
       content: 'Isi komentar',
