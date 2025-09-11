@@ -122,7 +122,6 @@ describe('/threads endpoint', () => {
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('Thread tidak ditemukan');
     });
-<<<<<<< HEAD
 
     it('should response 400 when title more than 50 characters', async () => {
       const server = await createServer(container);
@@ -243,7 +242,5 @@ describe('/threads endpoint', () => {
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('Thread tidak ditemukan');
     });
-=======
->>>>>>> dev
   });
 });
