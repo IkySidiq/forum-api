@@ -23,16 +23,21 @@ describe('AddCommentUseCase', () => {
     const mockCommentRepository = {
       addComment: jest.fn().mockResolvedValue(expectedAddedComment),
     };
+    const mockThreadRepository = {
+      verifyAvailableThread: jest.fn().mockResolvedValue(), // hanya resolve saja
+    };
 
     // Act
     const addCommentUseCase = new AddCommentUseCase({
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     const addedComment = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
     expect(verifyPayloadSpy).toHaveBeenCalledWith(useCasePayload);
+    expect(mockThreadRepository.verifyAvailableThread).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.addComment).toHaveBeenCalledWith({
       content: useCasePayload.content,
       threadId: useCasePayload.threadId,
@@ -54,9 +59,13 @@ describe('AddCommentUseCase', () => {
     const mockCommentRepository = {
       addComment: jest.fn(),
     };
+    const mockThreadRepository = {
+      verifyAvailableThread: jest.fn(),
+    };
 
     const addCommentUseCase = new AddCommentUseCase({
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Act & Assert
@@ -65,5 +74,6 @@ describe('AddCommentUseCase', () => {
       .toThrowError('ADDING_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
 
     expect(mockCommentRepository.addComment).not.toHaveBeenCalled();
+    expect(mockThreadRepository.verifyAvailableThread).not.toHaveBeenCalled();
   });
 });
