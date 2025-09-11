@@ -30,4 +30,10 @@ describe('CommentRepository interface', () => {
     await expect(commentRepository.getCommentsByThreadId('thread-123'))
       .rejects.toThrow('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
+
+  it('should throw error when invoke abstract behavior verifyComment', async () => {
+    const commentRepository = new CommentRepository();
+    await expect(commentRepository.verifyComment('comment-123'))
+      .rejects.toThrow('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  });
 });

@@ -36,9 +36,9 @@ DomainErrorTranslator._directories = {
   'DELETE_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus comment karena tipe data tidak sesuai'),
 
   // REPLIES
-  'ADDING_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply karena properti yang dibutuhkan tidak ada'),
-  'ADDING_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply karena tipe data tidak sesuai'),
-  'ADDING_REPLY.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat reply karena karakter content melebihi batas limit'),
+  'ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply karena properti yang dibutuhkan tidak ada'),
+  'ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply karena tipe data tidak sesuai'),
+  'ADD_REPLY.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat reply karena karakter content melebihi batas limit'),
 };
 
 

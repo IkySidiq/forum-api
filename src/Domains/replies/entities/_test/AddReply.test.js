@@ -11,7 +11,7 @@ describe('an AddReply entity', () => {
 
     // Action & Assert
     expect(() => new AddReply({ ...payload })).toThrow(
-      'ADDING_REPLY.NOT_CONTAIN_NEEDED_PROPERTY'
+      'ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY'
     );
   });
 
@@ -25,7 +25,7 @@ describe('an AddReply entity', () => {
 
     // Action & Assert
     expect(() => new AddReply({ ...payload })).toThrow(
-      'ADDING_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION'
+      'ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION'
     );
   });
 
@@ -39,7 +39,7 @@ describe('an AddReply entity', () => {
 
     // Action & Assert
     expect(() => new AddReply({ ...payload })).toThrow(
-      'ADDING_REPLY.CONTENT_LIMIT_CHAR'
+      'ADD_REPLY.CONTENT_LIMIT_CHAR'
     );
   });
 

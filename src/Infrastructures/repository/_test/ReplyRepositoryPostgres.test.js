@@ -48,20 +48,7 @@ describe('ReplyRepositoryPostgres', () => {
     await pool.end();
   });
 
-  describe('verifyComment', () => {
-    it('should throw NotFoundError if comment does not exist', async () => {
-      const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyComment('comment-xxx'))
-        .rejects.toThrowError(NotFoundError);
-    });
-
-    it('should not throw error if comment exists', async () => {
-      const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyComment('comment-123'))
-        .resolves.not.toThrowError();
-    });
-  });
-
+  // ========== addReply ==========
   describe('addReply', () => {
     it('should add reply and return AddedReply correctly', async () => {
       const mockIdGenerator = () => '123';
@@ -80,6 +67,7 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
+  // ========== getRepliesByCommentId ==========
   describe('getRepliesByCommentId', () => {
     it('should return all replies with correct format', async () => {
       let idCounter = 1;
@@ -120,6 +108,7 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
+  // ========== verifyReply ==========
   describe('verifyReply', () => {
     it('should throw NotFoundError if reply does not exist', async () => {
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
@@ -141,6 +130,7 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
+  // ========== verifyReplyOwner ==========
   describe('verifyReplyOwner', () => {
     it('should throw AuthorizationError if user is not the owner', async () => {
       await RepliesTableTestHelper.addReply({
@@ -169,6 +159,7 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
+  // ========== deleteReply ==========
   describe('deleteReply', () => {
     it('should soft delete reply', async () => {
       await RepliesTableTestHelper.addReply({

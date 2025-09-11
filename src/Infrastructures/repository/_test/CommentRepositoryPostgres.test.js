@@ -1,7 +1,6 @@
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
@@ -149,7 +148,7 @@ describe('CommentRepositoryPostgres', () => {
 
       await CommentsTableTestHelper.addComment({
         id: 'comment-124',
-        content: '**komentar telah dihapus**',
+        content: 'komentar dihapus',
         threadId: 'thread-123',
         owner: 'user-123',
         is_delete: true,
@@ -169,6 +168,28 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
       const comments = await commentRepository.getCommentsByThreadId('thread-123');
       expect(comments).toEqual([]);
+    });
+  });
+
+  // ========== verifyComment ==========
+  describe('verifyComment', () => {
+    it('should throw NotFoundError when comment does not exist', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await expect(commentRepository.verifyComment('comment-xxx'))
+        .rejects.toThrowError('Comment tidak ditemukan');
+    });
+
+    it('should not throw error when comment exists', async () => {
+      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'komen test',
+        threadId: 'thread-123',
+        owner: 'user-123',
+      });
+
+      await expect(commentRepository.verifyComment('comment-123'))
+        .resolves.not.toThrowError();
     });
   });
 });

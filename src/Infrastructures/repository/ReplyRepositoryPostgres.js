@@ -10,17 +10,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     this._idGenerator = idGenerator;
   }
 
-  async verifyComment(commentId) {
-    const query = {
-      text: 'SELECT id FROM comments WHERE id = $1',
-      values: [commentId],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new NotFoundError('Comment tidak ditemukan');
-    }
-  }
-
   async addReply({ content }, commentId, ownerId) {
     const id = `reply-${this._idGenerator()}`;
     const query = {

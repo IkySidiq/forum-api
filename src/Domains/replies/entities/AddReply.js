@@ -1,6 +1,7 @@
 class AddReply {
-  constructor({ content, ownerId, commentId }) {
-    this._verifyPayload({ content, ownerId, commentId });
+  constructor(payload) {
+    this._verifyPayload(payload);
+    const { content, ownerId, commentId } = payload;
 
     this.content = content;
     this.ownerId = ownerId;
@@ -9,19 +10,15 @@ class AddReply {
 
   _verifyPayload({ content, ownerId, commentId }) {
     if (!content || !ownerId || !commentId) {
-      throw new Error('ADDING_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
+      throw new Error('ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (
-      typeof content !== 'string' ||
-      typeof ownerId !== 'string' ||
-      typeof commentId !== 'string'
-    ) {
-      throw new Error('ADDING_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
+    if (typeof content !== 'string' || typeof ownerId !== 'string' || typeof commentId !== 'string') {
+      throw new Error('ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
 
     if (content.length > 500) {
-      throw new Error('ADDING_REPLY.CONTENT_LIMIT_CHAR');
+      throw new Error('ADD_REPLY.CONTENT_LIMIT_CHAR');
     }
   }
 }
