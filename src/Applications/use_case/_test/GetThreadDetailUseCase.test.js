@@ -30,7 +30,7 @@ describe('GetThreadDetailUseCase', () => {
         id: 'comment-124',
         username: 'johndoe',
         date: '2021-08-08T08:00:00.000Z',
-        content: 'comment dihapus',
+        content: '**komentar telah dihapus**',
         is_delete: true,
       },
     ];
@@ -39,14 +39,14 @@ describe('GetThreadDetailUseCase', () => {
     const mockReplies = [
       {
         id: 'reply-123',
-        content: 'sebuah balasan',
+        content: '**komentar telah dihapus**',
         date: '2021-08-08T08:07:01.522Z',
         username: 'dicoding',
         is_delete: false,
       },
       {
         id: 'reply-124',
-        content: 'balasan dihapus',
+        content: '**balasan telah dihapus**',
         date: '2021-08-08T07:59:48.766Z',
         username: 'johndoe',
         is_delete: true,

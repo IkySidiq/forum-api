@@ -54,7 +54,7 @@ describe('/threads endpoint', () => {
       const comment2Response = await server.inject({
         method: 'POST',
         url: `/threads/${addedThread.id}/comments`,
-        payload: { content: 'Komentar kedua' },
+        payload: { content: '**komentar telah dihapus**' },
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const comment2Id = JSON.parse(comment2Response.payload).data.addedComment.id;

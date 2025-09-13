@@ -3,6 +3,7 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('ThreadRepositoryPostgres', () => {
   beforeEach(async() => {
@@ -49,7 +50,7 @@ describe('ThreadRepositoryPostgres', () => {
     it('should throw NotFoundError when thread does not exist', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       await expect(threadRepository.verifyAvailableThread('thread-xxx'))
-        .rejects.toThrowError('Thread tidak ditemukan');
+        .rejects.toThrowError(NotFoundError);
     });
 
     it('should not throw error when thread exists', async() => {
@@ -73,7 +74,7 @@ describe('ThreadRepositoryPostgres', () => {
     it('should throw NotFoundError when thread does not exist', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       await expect(threadRepository.getThreadById('thread-xxx'))
-        .rejects.toThrowError('Thread tidak ditemukan');
+        .rejects.toThrowError(NotFoundError);
     });
 
     it('should return thread data correctly', async() => {

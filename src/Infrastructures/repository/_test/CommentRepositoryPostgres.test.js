@@ -4,6 +4,8 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
 describe('CommentRepositoryPostgres', () => {
   beforeEach(async() => {
@@ -58,7 +60,7 @@ describe('CommentRepositoryPostgres', () => {
     it('should throw NotFoundError when comment does not exist', async() => {
       const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
       await expect(commentRepository.deleteComment('comment-xxx'))
-        .rejects.toThrowError('Comment tidak ditemukan');
+        .rejects.toThrow(NotFoundError);
     });
 
     it('should mark comment as deleted when comment exists', async() => {
@@ -81,7 +83,7 @@ describe('CommentRepositoryPostgres', () => {
     it('should throw NotFoundError when comment does not exist', async() => {
       const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
       await expect(commentRepository.verifyAvailableComment('comment-xxx'))
-        .rejects.toThrowError('Comment tidak ditemukan');
+        .rejects.toThrow(NotFoundError);
     });
 
     it('should not throw error when comment exists', async() => {
@@ -94,7 +96,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyAvailableComment('comment-123'))
-        .resolves.not.toThrowError();
+        .resolves.not.toThrow();
     });
   });
 
@@ -103,7 +105,7 @@ describe('CommentRepositoryPostgres', () => {
     it('should throw NotFoundError when comment does not exist', async() => {
       const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
       await expect(commentRepository.verifyCommentOwner('comment-xxx', 'user-123'))
-        .rejects.toThrowError('Comment tidak ditemukan');
+        .rejects.toThrow(NotFoundError);
     });
 
     it('should throw AuthorizationError when owner is not the same', async() => {
@@ -116,7 +118,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyCommentOwner('comment-123', 'user-xxx'))
-        .rejects.toThrowError('anda tidak berhak mengakses resource ini');
+        .rejects.toThrow(AuthorizationError);
     });
 
     it('should not throw error when owner matches', async() => {
@@ -129,7 +131,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyCommentOwner('comment-123', 'user-123'))
-        .resolves.not.toThrowError();
+        .resolves.not.toThrow();
     });
   });
 
@@ -148,7 +150,7 @@ describe('CommentRepositoryPostgres', () => {
 
       await CommentsTableTestHelper.addComment({
         id: 'comment-124',
-        content: 'komentar dihapus',
+        content: '**komentar telah dihapus**',
         threadId: 'thread-123',
         owner: 'user-123',
         is_delete: true,
@@ -176,7 +178,7 @@ describe('CommentRepositoryPostgres', () => {
     it('should throw NotFoundError when comment does not exist', async() => {
       const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
       await expect(commentRepository.verifyComment('comment-xxx'))
-        .rejects.toThrowError('Comment tidak ditemukan');
+        .rejects.toThrow(NotFoundError);
     });
 
     it('should not throw error when comment exists', async() => {
@@ -189,7 +191,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyComment('comment-123'))
-        .resolves.not.toThrowError();
+        .resolves.not.toThrow();
     });
   });
 });
