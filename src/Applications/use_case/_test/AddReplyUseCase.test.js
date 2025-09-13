@@ -1,7 +1,9 @@
+const AddReply = require('../../../Domains/replies/entities/AddReply');
+const AddedReply = require('../../../Domains/replies/entities/AddedReply');
 const AddReplyUseCase = require('../AddReplyUseCase');
 
 describe('AddReplyUseCase', () => {
-  it('should orchestrate the add reply action correctly', async() => {
+  it('should orchestrate the add reply action correctly', async () => {
     // Arrange
     const useCasePayload = {
       content: 'Isi balasan',
@@ -10,15 +12,15 @@ describe('AddReplyUseCase', () => {
       threadId: 'thread-123',
     };
 
-    const expectedAddedReply = {
+    const addedReply = new AddedReply({
       id: 'reply-123',
       content: 'Isi balasan',
       owner: 'user-123',
-    };
+    });
 
     // Mock dependencies
     const mockReplyRepository = {
-      addReply: jest.fn().mockResolvedValue(expectedAddedReply),
+      addReply: jest.fn().mockResolvedValue(addedReply),
     };
     const mockCommentRepository = {
       verifyComment: jest.fn().mockResolvedValue(),
@@ -34,7 +36,7 @@ describe('AddReplyUseCase', () => {
     });
 
     // Act
-    const addedReply = await addReplyUseCase.execute(useCasePayload);
+    const result = await addReplyUseCase.execute(useCasePayload);
 
     // Assert
     expect(mockThreadRepository.verifyAvailableThread)
@@ -43,14 +45,16 @@ describe('AddReplyUseCase', () => {
       .toHaveBeenCalledWith(useCasePayload.commentId);
     expect(mockReplyRepository.addReply)
       .toHaveBeenCalledWith(
-        { content: useCasePayload.content },
-        useCasePayload.commentId,
-        useCasePayload.ownerId,
+        new AddReply({
+          content: useCasePayload.content,
+          commentId: useCasePayload.commentId,
+          ownerId: useCasePayload.ownerId,
+        }),
       );
-    expect(addedReply).toEqual(expectedAddedReply);
+    expect(result).toEqual(addedReply);
   });
 
-  it('should throw error when payload is missing required properties', async() => {
+  it('should throw error when payload is missing required properties', async () => {
     // Arrange
     const useCasePayload = {
       content: 'Isi balasan',

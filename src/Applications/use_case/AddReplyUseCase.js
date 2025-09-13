@@ -8,25 +8,17 @@ class AddReplyUseCase {
   }
 
   async execute({ content, commentId, ownerId, threadId }) {
+    console.log('Payload masuk', content, commentId, ownerId, threadId);
     try {
-      // Membuat entity AddReply untuk validasi payload
       const addReply = new AddReply({ content, commentId, ownerId });
 
-      // pastikan thread ada
       await this._threadRepository.verifyAvailableThread(threadId);
-
-      // Verifikasi apakah commentId valid
       await this._commentRepository.verifyComment(addReply.commentId);
 
-      // Memanggil repository untuk menyimpan reply
-      return this._replyRepository.addReply(
-        { content: addReply.content },
-        addReply.commentId,
-        addReply.ownerId,
-      );
+      return await this._replyRepository.addReply(addReply);
     } catch (error) {
       console.error('[AddReplyUseCase] Error:', error.message, error.stack);
-      throw error; // dilempar lagi ke handler Hapi
+      throw error; // biar tetap dilempar ke handler Hapi
     }
   }
 }

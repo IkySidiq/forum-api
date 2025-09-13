@@ -1,4 +1,5 @@
 const AddComment = require('../../../Domains/comments/entities/AddComment');
+const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const AddCommentUseCase = require('../AddCommentUseCase');
 
 describe('AddCommentUseCase', () => {
@@ -10,18 +11,18 @@ describe('AddCommentUseCase', () => {
       ownerId: 'user-123',
     };
 
-    const expectedAddedComment = {
+    const addedComment = new AddedComment({
       id: 'comment-123',
       content: 'Isi komentar',
       owner: 'user-123',
-    };
+    });
 
     // Spy pada _verifyPayload
     const verifyPayloadSpy = jest.spyOn(AddComment.prototype, '_verifyPayload');
 
     // Mock dependencies
     const mockCommentRepository = {
-      addComment: jest.fn().mockResolvedValue(expectedAddedComment),
+      addComment: jest.fn().mockResolvedValue(addedComment),
     };
     const mockThreadRepository = {
       verifyAvailableThread: jest.fn().mockResolvedValue(), // hanya resolve saja
@@ -33,7 +34,7 @@ describe('AddCommentUseCase', () => {
       threadRepository: mockThreadRepository,
     });
 
-    const addedComment = await addCommentUseCase.execute(useCasePayload);
+    const result = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
     expect(verifyPayloadSpy).toHaveBeenCalledWith(useCasePayload);
@@ -43,7 +44,7 @@ describe('AddCommentUseCase', () => {
       threadId: useCasePayload.threadId,
       ownerId: useCasePayload.ownerId,
     });
-    expect(addedComment).toEqual(expectedAddedComment);
+    expect(result).toEqual(addedComment);
 
     verifyPayloadSpy.mockRestore();
   });

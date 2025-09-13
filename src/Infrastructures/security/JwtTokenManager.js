@@ -19,7 +19,8 @@ class JwtTokenManager extends AuthenticationTokenManager {
     try {
       const artifacts = this._jwt.decode(token);
       this._jwt.verify(artifacts, process.env.REFRESH_TOKEN_KEY);
-    } catch (_error) {
+    } catch (error) {
+      console.error('JWT error:', error.message);
       throw new InvariantError('refresh token tidak valid');
     }
   }

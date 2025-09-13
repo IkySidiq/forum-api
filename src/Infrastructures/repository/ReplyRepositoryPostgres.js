@@ -10,12 +10,13 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     this._idGenerator = idGenerator;
   }
 
-  async addReply({ content }, commentId, ownerId) {
+  async addReply(addReply) {
     const id = `reply-${this._idGenerator()}`;
     const query = {
       text: 'INSERT INTO replies (id, content, owner_id, comment_id) VALUES($1, $2, $3, $4) RETURNING id, content, owner_id',
-      values: [id, content, ownerId, commentId],
+      values: [id, addReply.content, addReply.ownerId, addReply.commentId], // langsung ambil properti
     };
+
     const result = await this._pool.query(query);
     return new AddedReply({
       id: result.rows[0].id,
@@ -23,6 +24,8 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       owner: result.rows[0].owner_id,
     });
   }
+
+
 
   async getRepliesByCommentId(commentId) {
     const query = {

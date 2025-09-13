@@ -2,33 +2,28 @@ const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ReplyRepositoryPostgres = require('../ReplyRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
+
+const ReplyRepositoryPostgres = require('../ReplyRepositoryPostgres');
 const AddedReply = require('../../../Domains/replies/entities/AddedReply');
+const AddReply = require('../../../Domains/replies/entities/AddReply');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
 describe('ReplyRepositoryPostgres', () => {
-  it('should create instance of ReplyRepositoryPostgres', () => {
-    const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-    expect(replyRepository).toBeInstanceOf(ReplyRepositoryPostgres);
-  });
-
-  beforeEach(async() => {
+  beforeEach(async () => {
     await RepliesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
 
     await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
-
     await ThreadsTableTestHelper.addThread({
       id: 'thread-123',
       title: 'Thread Title',
       body: 'Thread Body',
       owner: 'user-123',
     });
-
     await CommentsTableTestHelper.addComment({
       id: 'comment-123',
       content: 'Isi komentar',
@@ -37,55 +32,74 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await RepliesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
   });
 
-  afterAll(async() => {
+  afterAll(async () => {
     await pool.end();
   });
 
   // ========== addReply ==========
   describe('addReply', () => {
-    it('should add reply and return AddedReply correctly', async() => {
-      const mockIdGenerator = () => '123';
-      const replyRepository = new ReplyRepositoryPostgres(pool, mockIdGenerator);
+    it('should add reply and return AddedReply correctly', async () => {
+      const newReply = new AddReply({
+        content: 'Isi balasan',
+        commentId: 'comment-123',
+        ownerId: 'user-123',
+      });
 
-      const newReply = { content: 'Isi balasan' };
-      const addedReply = await replyRepository.addReply(newReply, 'comment-123', 'user-123');
+      const fakeIdGenerator = () => '123';
+      const replyRepository = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
 
+      const addedReply = await replyRepository.addReply(newReply);
       const replies = await RepliesTableTestHelper.findReplyById('reply-123');
 
       expect(replies).toHaveLength(1);
-      expect(addedReply).toBeInstanceOf(AddedReply);
-      expect(addedReply.id).toBe('reply-123');
-      expect(addedReply.content).toBe('Isi balasan');
-      expect(addedReply.owner).toBe('user-123');
+      expect(addedReply).toStrictEqual(
+        new AddedReply({
+          id: 'reply-123',
+          content: 'Isi balasan',
+          owner: 'user-123',
+        }),
+      );
     });
   });
 
   // ========== getRepliesByCommentId ==========
   describe('getRepliesByCommentId', () => {
-    it('should return all replies with correct format', async() => {
-      let idCounter = 1;
-      const replyRepository = new ReplyRepositoryPostgres(pool, () => `${idCounter++}`);
+    it('should return all replies with correct format', async () => {
+      let counter = 1;
+      const replyRepository = new ReplyRepositoryPostgres(pool, () => `${counter++}`);
 
-      await replyRepository.addReply({ content: 'Balasan pertama' }, 'comment-123', 'user-123');
-      await replyRepository.addReply({ content: 'Balasan kedua' }, 'comment-123', 'user-123');
+      const reply1 = new AddReply({
+        content: 'Balasan pertama',
+        commentId: 'comment-123',
+        ownerId: 'user-123',
+      });
+
+      const reply2 = new AddReply({
+        content: 'Balasan kedua',
+        commentId: 'comment-123',
+        ownerId: 'user-123',
+      });
+
+      await replyRepository.addReply(reply1);
+      await replyRepository.addReply(reply2);
 
       const replies = await replyRepository.getRepliesByCommentId('comment-123');
 
       expect(replies).toHaveLength(2);
       expect(replies[0].content).toBe('Balasan pertama');
       expect(replies[1].content).toBe('Balasan kedua');
-      expect(replies[0].username).toBe('dicoding');
+      expect(replies[0]).toHaveProperty('username', 'dicoding');
       expect(replies[0]).toHaveProperty('date');
     });
 
-    it('should return reply with content replaced if deleted', async() => {
+    it('should return reply with content replaced if deleted', async () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Balasan sensitif',
@@ -101,7 +115,7 @@ describe('ReplyRepositoryPostgres', () => {
       expect(replies[0].content).toBe('**balasan telah dihapus**');
     });
 
-    it('should return empty array if no replies', async() => {
+    it('should return empty array if no replies', async () => {
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
       const replies = await replyRepository.getRepliesByCommentId('comment-123');
       expect(replies).toEqual([]);
@@ -110,13 +124,12 @@ describe('ReplyRepositoryPostgres', () => {
 
   // ========== verifyReply ==========
   describe('verifyReply', () => {
-    it('should throw NotFoundError if reply does not exist', async() => {
+    it('should throw NotFoundError if reply does not exist', async () => {
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyReply('reply-xxx'))
-        .rejects.toThrowError(NotFoundError);
+      await expect(replyRepository.verifyReply('reply-xxx')).rejects.toThrowError(NotFoundError);
     });
 
-    it('should not throw error if reply exists', async() => {
+    it('should not throw error if reply exists', async () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Balasan valid',
@@ -125,14 +138,13 @@ describe('ReplyRepositoryPostgres', () => {
       });
 
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyReply('reply-123'))
-        .resolves.not.toThrowError();
+      await expect(replyRepository.verifyReply('reply-123')).resolves.not.toThrowError();
     });
   });
 
   // ========== verifyReplyOwner ==========
   describe('verifyReplyOwner', () => {
-    it('should throw AuthorizationError if user is not the owner', async() => {
+    it('should throw AuthorizationError if user is not the owner', async () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Balasan milik user lain',
@@ -141,11 +153,12 @@ describe('ReplyRepositoryPostgres', () => {
       });
 
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyReplyOwner('reply-123', 'user-999'))
-        .rejects.toThrowError(AuthorizationError);
+      await expect(replyRepository.verifyReplyOwner('reply-123', 'user-999')).rejects.toThrowError(
+        AuthorizationError,
+      );
     });
 
-    it('should not throw error if user is the owner', async() => {
+    it('should not throw error if user is the owner', async () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Balasan milik user',
@@ -154,14 +167,13 @@ describe('ReplyRepositoryPostgres', () => {
       });
 
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyReplyOwner('reply-123', 'user-123'))
-        .resolves.not.toThrowError();
+      await expect(replyRepository.verifyReplyOwner('reply-123', 'user-123')).resolves.not.toThrowError();
     });
   });
 
   // ========== deleteReply ==========
   describe('deleteReply', () => {
-    it('should soft delete reply', async() => {
+    it('should soft delete reply', async () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Balasan yang akan dihapus',

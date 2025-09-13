@@ -1,3 +1,4 @@
+const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddThreadUseCase = require('../AddThreadUseCase');
 
@@ -10,16 +11,18 @@ describe('AddThreadUseCase', () => {
       body: 'Thread Body',
     };
 
-    const expectedAddedThread = {
+    const addedThread = new AddedThread({
       id: 'thread-123',
-    };
+      title: useCasePayload.title,
+      owner: useCasePayload.ownerId,
+    });
 
     // Spy pada _verifyPayload
     const verifyPayloadSpy = jest.spyOn(AddThread.prototype, '_verifyPayload');
 
     // Mock dependencies
     const mockThreadRepository = {
-      addThread: jest.fn().mockResolvedValue(expectedAddedThread),
+      addThread: jest.fn().mockResolvedValue(addedThread),
     };
 
     // Act
@@ -27,7 +30,7 @@ describe('AddThreadUseCase', () => {
       threadRepository: mockThreadRepository,
     });
     // TODO: Ini seperti pemanggilan dari handler yang menjalankan addThreadUseCase.execute(useCasePayload);
-    const addedThread = await addThreadUseCase.execute(useCasePayload);
+    const result = await addThreadUseCase.execute(useCasePayload);
 
     // Assert
     expect(verifyPayloadSpy).toHaveBeenCalledWith(useCasePayload);
@@ -36,7 +39,7 @@ describe('AddThreadUseCase', () => {
       body: useCasePayload.body,
       ownerId: useCasePayload.ownerId,
     });
-    expect(addedThread).toEqual(expectedAddedThread);
+    expect(result).toEqual(addedThread);
     verifyPayloadSpy.mockRestore();
   });
 
