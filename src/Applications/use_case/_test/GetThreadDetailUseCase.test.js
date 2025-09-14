@@ -56,7 +56,7 @@ describe('GetThreadDetailUseCase', () => {
     // mock repository
     const mockThreadRepository = new ThreadRepository();
     mockThreadRepository.verifyAvailableThread = jest.fn(() => Promise.resolve());
-    mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(mockThread));
+    mockThreadRepository.getThreadbyId = jest.fn(() => Promise.resolve(mockThread));
 
     const mockCommentRepository = new CommentRepository();
     mockCommentRepository.getCommentsByThreadId = jest.fn(() => Promise.resolve(mockComments));
@@ -112,7 +112,7 @@ describe('GetThreadDetailUseCase', () => {
 
     // cek pemanggilan repository
     expect(mockThreadRepository.verifyAvailableThread).toHaveBeenCalledWith(useCasePayload.threadId);
-    expect(mockThreadRepository.getThreadById).toHaveBeenCalledWith(useCasePayload.threadId);
+    expect(mockThreadRepository.getThreadbyId).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockReplyRepository.getRepliesByCommentId).toHaveBeenCalledWith(mockComments[0].id);
     expect(mockReplyRepository.getRepliesByCommentId).toHaveBeenCalledWith(mockComments[1].id);

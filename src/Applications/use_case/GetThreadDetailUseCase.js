@@ -10,7 +10,7 @@ class GetThreadDetailUseCase {
     await this._threadRepository.verifyAvailableThread(threadId);
 
     // ambil data thread
-    const thread = await this._threadRepository.getThreadById(threadId);
+    const thread = await this._threadRepository.getThreadbyId(threadId);
 
     // ambil semua comment di thread
     const comments = await this._commentRepository.getCommentsByThreadId(threadId);

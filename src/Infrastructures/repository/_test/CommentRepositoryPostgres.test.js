@@ -72,7 +72,8 @@ describe('CommentRepositoryPostgres', () => {
         owner: 'user-123',
       });
 
-      await commentRepository.deleteComment('comment-123');
+      await expect(commentRepository.deleteComment('comment-123'))
+        .resolves.not.toThrowError(NotFoundError);
       const comments = await CommentsTableTestHelper.findCommentById('comment-123');
       expect(comments[0].is_delete).toBe(true);
     });
@@ -96,7 +97,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyAvailableComment('comment-123'))
-        .resolves.not.toThrow();
+        .resolves.not.toThrow(NotFoundError);
     });
   });
 
@@ -131,47 +132,62 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyCommentOwner('comment-123', 'user-123'))
-        .resolves.not.toThrow();
+        .resolves.not.toThrow(NotFoundError);
     });
   });
 
-  // ========== getCommentsByThreadId ==========
-  describe('getCommentsByThreadId', () => {
-    it('should return all comments with proper content for normal and deleted comments', async() => {
-      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+// ========== getCommentsByThreadId ==========
+describe('getCommentsByThreadId', () => {
+  it('should return all comments with proper content for normal and deleted comments', async () => {
+    const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
 
-      await CommentsTableTestHelper.addComment({
+    // Tambah komentar normal
+    await CommentsTableTestHelper.addComment({
+      id: 'comment-123',
+      content: 'komentar normal',
+      threadId: 'thread-123',
+      owner: 'user-123',
+      date: '2025-09-10T10:50:10.302Z',
+    });
+
+    // Tambah komentar yang dihapus
+    await CommentsTableTestHelper.addComment({
+      id: 'comment-124',
+      content: '**komentar telah dihapus**',
+      threadId: 'thread-123',
+      owner: 'user-123',
+      is_delete: true,
+      date: '2025-09-10T10:55:10.302Z',
+    });
+
+    const comments = await commentRepository.getCommentsByThreadId('thread-123');
+
+    // Uji semua atribut komentar
+    expect(comments).toStrictEqual([
+      {
         id: 'comment-123',
         content: 'komentar normal',
-        threadId: 'thread-123',
-        owner: 'user-123',
         date: '2025-09-10T10:50:10.302Z',
-      });
-
-      await CommentsTableTestHelper.addComment({
+        username: 'dicoding',
+        isDelete: false,
+      },
+      {
         id: 'comment-124',
         content: '**komentar telah dihapus**',
-        threadId: 'thread-123',
-        owner: 'user-123',
-        is_delete: true,
         date: '2025-09-10T10:55:10.302Z',
-      });
-
-      const comments = await commentRepository.getCommentsByThreadId('thread-123');
-
-      expect(comments).toHaveLength(2);
-      expect(comments[0].id).toBe('comment-123');
-      expect(comments[0].content).toBe('komentar normal');
-      expect(comments[1].id).toBe('comment-124');
-      expect(comments[1].content).toBe('**komentar telah dihapus**');
-    });
-
-    it('should return empty array when no comments', async() => {
-      const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
-      const comments = await commentRepository.getCommentsByThreadId('thread-123');
-      expect(comments).toEqual([]);
-    });
+        username: 'dicoding',
+        isDelete: true,
+      },
+    ]);
   });
+
+  it('should return empty array when no comments', async () => {
+    const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
+    const comments = await commentRepository.getCommentsByThreadId('thread-123');
+    expect(comments).toEqual([]);
+  });
+});
+
 
   // ========== verifyComment ==========
   describe('verifyComment', () => {

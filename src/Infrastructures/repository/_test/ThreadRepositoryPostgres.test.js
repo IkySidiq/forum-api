@@ -73,7 +73,7 @@ describe('ThreadRepositoryPostgres', () => {
   describe('getThreadById', () => {
     it('should throw NotFoundError when thread does not exist', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
-      await expect(threadRepository.getThreadById('thread-xxx'))
+      await expect(threadRepository.getThreadbyId('thread-xxx'))
         .rejects.toThrowError(NotFoundError);
     });
 
@@ -88,7 +88,7 @@ describe('ThreadRepositoryPostgres', () => {
         owner: 'user-123',
       });
 
-      const thread = await threadRepository.getThreadById(uniqueThreadId);
+      const thread = await threadRepository.getThreadbyId(uniqueThreadId);
 
       expect(thread.id).toBe(uniqueThreadId);
       expect(thread.title).toBe('Judul Thread');
