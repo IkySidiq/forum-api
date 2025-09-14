@@ -8,7 +8,6 @@ class AddReplyUseCase {
   }
 
   async execute({ content, commentId, ownerId, threadId }) {
-    console.log('Payload masuk', content, commentId, ownerId, threadId);
     try {
       const addReply = new AddReply({ content, commentId, ownerId });
 

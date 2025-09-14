@@ -12,33 +12,47 @@ describe('AddReplyUseCase', () => {
       threadId: 'thread-123',
     };
 
-    const addedReply = new AddedReply({
+    const expectedAddedReply = new AddedReply({
       id: 'reply-123',
-      content: 'Isi balasan',
-      owner: 'user-123',
+      content: useCasePayload.content,
+      owner: useCasePayload.ownerId,
     });
+
+    // Spy pada _verifyPayload
+    const verifyPayloadSpy = jest.spyOn(AddReply.prototype, '_verifyPayload');
 
     // Mock dependencies
     const mockReplyRepository = {
-      addReply: jest.fn().mockResolvedValue(addedReply),
+      addReply: jest.fn((reply) =>
+        Promise.resolve(new AddedReply({
+          id: 'reply-123',
+          content: reply.content,
+          owner: reply.ownerId,
+        }))
+      ),
     };
     const mockCommentRepository = {
-      verifyComment: jest.fn().mockResolvedValue(),
+      verifyComment: jest.fn(() => Promise.resolve()),
     };
     const mockThreadRepository = {
-      verifyAvailableThread: jest.fn().mockResolvedValue(),
+      verifyAvailableThread: jest.fn(() => Promise.resolve()),
     };
 
+    // Act
     const addReplyUseCase = new AddReplyUseCase({
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
     });
 
-    // Act
     const result = await addReplyUseCase.execute(useCasePayload);
 
     // Assert
+    expect(verifyPayloadSpy).toHaveBeenCalledWith({
+      content: useCasePayload.content,
+      commentId: useCasePayload.commentId,
+      ownerId: useCasePayload.ownerId,
+    }); // threadId dihilangkan karena AddReply tidak pakai
     expect(mockThreadRepository.verifyAvailableThread)
       .toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.verifyComment)
@@ -51,7 +65,9 @@ describe('AddReplyUseCase', () => {
           ownerId: useCasePayload.ownerId,
         }),
       );
-    expect(result).toEqual(addedReply);
+    expect(result).toStrictEqual(expectedAddedReply);
+
+    verifyPayloadSpy.mockRestore();
   });
 
   it('should throw error when payload is missing required properties', async () => {

@@ -3,7 +3,7 @@ const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const AddCommentUseCase = require('../AddCommentUseCase');
 
 describe('AddCommentUseCase', () => {
-  it('should orchestrate the add comment action correctly', async() => {
+  it('should orchestrate the add comment action correctly', async () => {
     // Arrange
     const useCasePayload = {
       content: 'Isi komentar',
@@ -11,10 +11,10 @@ describe('AddCommentUseCase', () => {
       ownerId: 'user-123',
     };
 
-    const addedComment = new AddedComment({
+    const expectedAddedComment = new AddedComment({
       id: 'comment-123',
-      content: 'Isi komentar',
-      owner: 'user-123',
+      content: useCasePayload.content,
+      owner: useCasePayload.ownerId,
     });
 
     // Spy pada _verifyPayload
@@ -22,10 +22,17 @@ describe('AddCommentUseCase', () => {
 
     // Mock dependencies
     const mockCommentRepository = {
-      addComment: jest.fn().mockResolvedValue(addedComment),
+      addComment: jest.fn((comment) => 
+        Promise.resolve(new AddedComment({
+          id: 'comment-123',
+          content: comment.content,
+          owner: comment.ownerId,
+        }))
+      ),
     };
+
     const mockThreadRepository = {
-      verifyAvailableThread: jest.fn().mockResolvedValue(), // hanya resolve saja
+      verifyAvailableThread: jest.fn(() => Promise.resolve()), // hanya resolve saja
     };
 
     // Act
@@ -44,12 +51,12 @@ describe('AddCommentUseCase', () => {
       threadId: useCasePayload.threadId,
       ownerId: useCasePayload.ownerId,
     });
-    expect(result).toEqual(addedComment);
+    expect(result).toStrictEqual(expectedAddedComment);
 
     verifyPayloadSpy.mockRestore();
   });
 
-  it('should throw error when payload is missing required properties', async() => {
+  it('should throw error when payload is missing required properties', async () => {
     // Arrange
     const useCasePayload = {
       content: 'Isi komentar',

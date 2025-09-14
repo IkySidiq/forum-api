@@ -3,7 +3,7 @@ const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddThreadUseCase = require('../AddThreadUseCase');
 
 describe('AddThreadUseCase', () => {
-  it('should orchestrate the add thread action correctly', async() => {
+  it('should orchestrate the add thread action correctly', async () => {
     // Arrange
     const useCasePayload = {
       ownerId: 'owner-123',
@@ -11,7 +11,7 @@ describe('AddThreadUseCase', () => {
       body: 'Thread Body',
     };
 
-    const addedThread = new AddedThread({
+    const expectedAddedThread = new AddedThread({
       id: 'thread-123',
       title: useCasePayload.title,
       owner: useCasePayload.ownerId,
@@ -22,28 +22,37 @@ describe('AddThreadUseCase', () => {
 
     // Mock dependencies
     const mockThreadRepository = {
-      addThread: jest.fn().mockResolvedValue(addedThread),
+      addThread: jest.fn((thread) =>
+        Promise.resolve(new AddedThread({
+          id: 'thread-123',
+          title: thread.title,
+          owner: thread.ownerId,
+        }))
+      ),
     };
 
     // Act
     const addThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
     });
-    // TODO: Ini seperti pemanggilan dari handler yang menjalankan addThreadUseCase.execute(useCasePayload);
+
     const result = await addThreadUseCase.execute(useCasePayload);
 
     // Assert
     expect(verifyPayloadSpy).toHaveBeenCalledWith(useCasePayload);
-    expect(mockThreadRepository.addThread).toHaveBeenCalledWith({
-      title: useCasePayload.title,
-      body: useCasePayload.body,
-      ownerId: useCasePayload.ownerId,
-    });
-    expect(result).toEqual(addedThread);
+    expect(mockThreadRepository.addThread).toHaveBeenCalledWith(
+      new AddThread({
+        title: useCasePayload.title,
+        body: useCasePayload.body,
+        ownerId: useCasePayload.ownerId,
+      })
+    );
+    expect(result).toStrictEqual(expectedAddedThread);
+
     verifyPayloadSpy.mockRestore();
   });
 
-  it('should throw error when payload is missing required properties', async() => {
+  it('should throw error when payload is missing required properties', async () => {
     // Arrange
     const useCasePayload = {
       ownerId: 'owner-123',
