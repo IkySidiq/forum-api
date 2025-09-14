@@ -34,7 +34,7 @@ class GetThreadDetailUseCase {
           id: comment.id,
           username: comment.username,
           date: comment.date,
-          content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
+          content: comment.isDelete ? '**komentar telah dihapus**' : comment.content,
           replies,
         };
       })
