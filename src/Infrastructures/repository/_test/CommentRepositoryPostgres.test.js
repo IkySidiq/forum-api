@@ -153,15 +153,15 @@ describe('CommentRepositoryPostgres', () => {
         date: '2025-09-10T10:50:10.302Z',
       });
 
-  // Tambah komentar yang dihapus
-    await CommentsTableTestHelper.addComment({
-      id: 'comment-124',
-      content: 'komentar normal',
-      threadId: 'thread-123',
-      owner: 'user-123',
-      is_delete: true,
-      date: '2025-09-10T10:55:10.302Z',
-    });
+      // Tambah komentar yang dihapus
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-124',
+        content: 'komentar normal',
+        threadId: 'thread-123',
+        owner: 'user-123',
+        is_delete: true,
+        date: '2025-09-10T10:55:10.302Z',
+      });
 
       const comments = await commentRepository.getCommentsByThreadId('thread-123');
 
