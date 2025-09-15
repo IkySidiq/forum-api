@@ -4,7 +4,7 @@ const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const GetThreadDetailUseCase = require('../GetThreadDetailUseCase');
 
 describe('GetThreadDetailUseCase', () => {
-  it('should orchestrate get thread detail with replies correctly', async() => {
+  it('should orchestrate get thread detail with replies correctly', async () => {
     // payload use case
     const useCasePayload = { threadId: 'thread-123' };
 
@@ -17,21 +17,21 @@ describe('GetThreadDetailUseCase', () => {
       username: 'dicoding',
     };
 
-    // mock data comment
+    // mock data comment (sesuaikan property dengan isDelete)
     const mockComments = [
       {
         id: 'comment-123',
         username: 'dicoding',
         date: '2021-08-08T07:59:18.982Z',
         content: 'sebuah comment',
-        is_delete: false,
+        isDelete: false,
       },
       {
         id: 'comment-124',
         username: 'johndoe',
         date: '2021-08-08T08:00:00.000Z',
-        content: '**komentar telah dihapus**',
-        is_delete: true,
+        content: 'sebuah comment',
+        isDelete: true,
       },
     ];
 
@@ -39,17 +39,17 @@ describe('GetThreadDetailUseCase', () => {
     const mockReplies = [
       {
         id: 'reply-123',
-        content: '**komentar telah dihapus**',
+        content: 'sebuah reply',
         date: '2021-08-08T08:07:01.522Z',
         username: 'dicoding',
-        is_delete: false,
+        isDelete: false,
       },
       {
         id: 'reply-124',
-        content: '**balasan telah dihapus**',
+        content: 'reply dihapus',
         date: '2021-08-08T07:59:48.766Z',
         username: 'johndoe',
-        is_delete: true,
+        isDelete: true,
       },
     ];
 
@@ -86,25 +86,25 @@ describe('GetThreadDetailUseCase', () => {
       username: mockThread.username,
       comments: [
         {
-          id: mockComments[0].id,
-          username: mockComments[0].username,
-          date: mockComments[0].date,
-          content: mockComments[0].content,
+          id: 'comment-123',
+          username: 'dicoding',
+          date: '2021-08-08T07:59:18.982Z',
+          content: 'sebuah comment',
           replies: [
             {
-              id: mockReplies[0].id,
-              content: mockReplies[0].content,
-              date: mockReplies[0].date,
-              username: mockReplies[0].username,
+              id: 'reply-123',
+              content: 'sebuah reply',
+              date: '2021-08-08T08:07:01.522Z',
+              username: 'dicoding',
             },
-            // ⚠️ reply yang dihapus (mockReplies[1]) gak ikut
+            // reply yang dihapus (reply-124) gak ikut
           ],
         },
         {
-          id: mockComments[1].id,
-          username: mockComments[1].username,
-          date: mockComments[1].date,
-          content: '**komentar telah dihapus**',
+          id: 'comment-124',
+          username: 'johndoe',
+          date: '2021-08-08T08:00:00.000Z',
+          content: '**komentar telah dihapus**', // comment dihapus
           replies: [],
         },
       ],
@@ -114,7 +114,7 @@ describe('GetThreadDetailUseCase', () => {
     expect(mockThreadRepository.verifyAvailableThread).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockThreadRepository.getThreadbyId).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toHaveBeenCalledWith(useCasePayload.threadId);
-    expect(mockReplyRepository.getRepliesByCommentId).toHaveBeenCalledWith(mockComments[0].id);
-    expect(mockReplyRepository.getRepliesByCommentId).toHaveBeenCalledWith(mockComments[1].id);
+    expect(mockReplyRepository.getRepliesByCommentId).toHaveBeenCalledWith('comment-123');
+    expect(mockReplyRepository.getRepliesByCommentId).toHaveBeenCalledWith('comment-124');
   });
 });

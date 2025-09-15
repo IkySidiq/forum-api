@@ -133,6 +133,9 @@ describe('CommentRepositoryPostgres', () => {
 
       await expect(commentRepository.verifyCommentOwner('comment-123', 'user-123'))
         .resolves.not.toThrow(NotFoundError);
+      
+      await expect(commentRepository.verifyCommentOwner('comment-123', 'user-123'))
+        .resolves.not.toThrow(AuthorizationError);
     });
   });
 
@@ -144,21 +147,21 @@ describe('CommentRepositoryPostgres', () => {
       // Tambah komentar normal
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
-        content: 'komentar normal',
+        content: 'Ini adalah komentar asli dan tidak akan dihapus karena berguna untuk audit',
         threadId: 'thread-123',
         owner: 'user-123',
         date: '2025-09-10T10:50:10.302Z',
       });
 
-      // Tambah komentar yang dihapus
-      await CommentsTableTestHelper.addComment({
-        id: 'comment-124',
-        content: '**komentar telah dihapus**',
-        threadId: 'thread-123',
-        owner: 'user-123',
-        is_delete: true,
-        date: '2025-09-10T10:55:10.302Z',
-      });
+  // Tambah komentar yang dihapus
+    await CommentsTableTestHelper.addComment({
+      id: 'comment-124',
+      content: 'komentar normal',
+      threadId: 'thread-123',
+      owner: 'user-123',
+      is_delete: true,
+      date: '2025-09-10T10:55:10.302Z',
+    });
 
       const comments = await commentRepository.getCommentsByThreadId('thread-123');
 
@@ -166,7 +169,7 @@ describe('CommentRepositoryPostgres', () => {
       expect(comments).toStrictEqual([
         {
           id: 'comment-123',
-          content: 'komentar normal',
+          content: 'Ini adalah komentar asli dan tidak akan dihapus karena berguna untuk audit',
           date: '2025-09-10T10:50:10.302Z',
           username: 'dicoding',
           isDelete: false,
@@ -207,7 +210,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       await expect(commentRepository.verifyComment('comment-123'))
-        .resolves.not.toThrow();
+        .resolves.not.toThrow(NotFoundError);
     });
   });
 });

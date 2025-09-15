@@ -76,7 +76,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     const query = {
       text: `
         SELECT comments.id, comments.content, comments.date, comments.is_delete, 
-               users.username
+              users.username
         FROM comments
         LEFT JOIN users ON users.id = comments.owner_id
         WHERE comments.thread_id = $1
@@ -91,7 +91,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       id: row.id,
       username: row.username,
       date: row.date.toISOString(),
-      content: row.content,
+      content: row.is_delete ? '**komentar telah dihapus**' : row.content,
       isDelete: row.is_delete,
     }));
   }
