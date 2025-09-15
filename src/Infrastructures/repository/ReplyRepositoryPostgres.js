@@ -25,8 +25,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     });
   }
 
-
-
   async getRepliesByCommentId(commentId) {
     const query = {
       text: `
@@ -43,9 +41,10 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     return result.rows.map((reply) => ({
       id: reply.id,
-      content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
+      content: reply.content,
       date: reply.date,
       username: reply.username,
+      isDelete: reply.is_delete,
     }));
   }
 

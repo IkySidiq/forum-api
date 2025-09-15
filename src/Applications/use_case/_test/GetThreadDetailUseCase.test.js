@@ -17,7 +17,7 @@ describe('GetThreadDetailUseCase', () => {
       username: 'dicoding',
     };
 
-    // mock data comment (sesuaikan property dengan isDelete)
+    // mock data comment
     const mockComments = [
       {
         id: 'comment-123',
@@ -77,7 +77,7 @@ describe('GetThreadDetailUseCase', () => {
     // execute use case
     const result = await getThreadDetailUseCase.execute(useCasePayload);
 
-    // assertion
+    // assertion hasil akhir
     expect(result).toStrictEqual({
       id: mockThread.id,
       title: mockThread.title,
@@ -97,14 +97,19 @@ describe('GetThreadDetailUseCase', () => {
               date: '2021-08-08T08:07:01.522Z',
               username: 'dicoding',
             },
-            // reply yang dihapus (reply-124) gak ikut
+            {
+              id: 'reply-124',
+              content: '**balasan telah dihapus**', // cek transformasi di use case
+              date: '2021-08-08T07:59:48.766Z',
+              username: 'johndoe',
+            },
           ],
         },
         {
           id: 'comment-124',
           username: 'johndoe',
           date: '2021-08-08T08:00:00.000Z',
-          content: '**komentar telah dihapus**', // comment dihapus
+          content: '**komentar telah dihapus**', // cek transformasi di use case
           replies: [],
         },
       ],

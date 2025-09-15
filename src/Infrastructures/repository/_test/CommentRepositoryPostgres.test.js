@@ -141,7 +141,7 @@ describe('CommentRepositoryPostgres', () => {
 
   // ========== getCommentsByThreadId ==========
   describe('getCommentsByThreadId', () => {
-    it('should return all comments with proper content for normal and deleted comments', async () => {
+    it('should return all comments with proper raw data', async () => {
       const commentRepository = new CommentRepositoryPostgres(pool, () => '123');
 
       // Tambah komentar normal
@@ -165,7 +165,7 @@ describe('CommentRepositoryPostgres', () => {
 
       const comments = await commentRepository.getCommentsByThreadId('thread-123');
 
-      // Uji semua atribut komentar
+      // Uji semua atribut komentar mentah
       expect(comments).toStrictEqual([
         {
           id: 'comment-123',
@@ -176,7 +176,7 @@ describe('CommentRepositoryPostgres', () => {
         },
         {
           id: 'comment-124',
-          content: '**komentar telah dihapus**',
+          content: 'komentar normal', // ❌ tetap raw, tidak diubah
           date: '2025-09-10T10:55:10.302Z',
           username: 'dicoding',
           isDelete: true,
@@ -190,7 +190,6 @@ describe('CommentRepositoryPostgres', () => {
       expect(comments).toEqual([]);
     });
   });
-
 
   // ========== verifyComment ==========
   describe('verifyComment', () => {

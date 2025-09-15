@@ -97,9 +97,10 @@ describe('ReplyRepositoryPostgres', () => {
       expect(replies[1].content).toBe('Balasan kedua');
       expect(replies[0]).toHaveProperty('username', 'dicoding');
       expect(replies[0]).toHaveProperty('date');
+      expect(replies[0]).toHaveProperty('isDelete'); // tambahkan check isDelete
     });
 
-    it('should return reply with content replaced if deleted', async () => {
+    it('should return reply with isDelete true if deleted', async () => {
       await RepliesTableTestHelper.addReply({
         id: 'reply-123',
         content: 'Balasan sensitif',
@@ -112,7 +113,8 @@ describe('ReplyRepositoryPostgres', () => {
       const replies = await replyRepository.getRepliesByCommentId('comment-123');
 
       expect(replies).toHaveLength(1);
-      expect(replies[0].content).toBe('**balasan telah dihapus**');
+      expect(replies[0].content).toBe('Balasan sensitif'); // sekarang content mentah
+      expect(replies[0].isDelete || replies[0].is_delete).toBe(true); // cek flag delete
     });
 
     it('should return empty array if no replies', async () => {
@@ -138,7 +140,7 @@ describe('ReplyRepositoryPostgres', () => {
       });
 
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyReply('reply-123')).resolves.not.toThrowError();
+      await expect(replyRepository.verifyReply('reply-123')).resolves.not.toThrowError(NotFoundError);
     });
   });
 
@@ -167,7 +169,7 @@ describe('ReplyRepositoryPostgres', () => {
       });
 
       const replyRepository = new ReplyRepositoryPostgres(pool, () => '123');
-      await expect(replyRepository.verifyReplyOwner('reply-123', 'user-123')).resolves.not.toThrowError();
+      await expect(replyRepository.verifyReplyOwner('reply-123', 'user-123')).resolves.not.toThrowError(AuthorizationError);
     });
   });
 

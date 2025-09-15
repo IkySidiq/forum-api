@@ -91,7 +91,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       id: row.id,
       username: row.username,
       date: row.date.toISOString(),
-      content: row.is_delete ? '**komentar telah dihapus**' : row.content,
+      content: row.content,
       isDelete: row.is_delete,
     }));
   }

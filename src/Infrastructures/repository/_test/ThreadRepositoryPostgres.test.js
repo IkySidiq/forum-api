@@ -65,7 +65,7 @@ describe('ThreadRepositoryPostgres', () => {
       });
 
       await expect(threadRepository.verifyAvailableThread(uniqueThreadId))
-        .resolves.not.toThrowError();
+        .resolves.not.toThrowError(NotFoundError);
     });
   });
 
@@ -94,6 +94,7 @@ describe('ThreadRepositoryPostgres', () => {
       expect(thread.title).toBe('Judul Thread');
       expect(thread.body).toBe('Isi Thread');
       expect(thread.username).toBe('dicoding');
+      expect(thread.date).toBeDefined(); 
     });
   });
 });

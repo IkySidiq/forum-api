@@ -12,7 +12,7 @@ class GetThreadDetailUseCase {
     // ambil data thread
     const thread = await this._threadRepository.getThreadbyId(threadId);
 
-    // ambil semua comment di thread
+    // ambil semua comment di thread (raw data dari repo)
     const comments = await this._commentRepository.getCommentsByThreadId(threadId);
 
     // mapping comment + ambil replies
@@ -20,21 +20,19 @@ class GetThreadDetailUseCase {
       comments.map(async (comment) => {
         const rawReplies = await this._replyRepository.getRepliesByCommentId(comment.id);
 
-        // hanya ambil reply yang tidak dihapus
-        const replies = rawReplies
-          .filter(reply => !reply.is_delete && !reply.isDelete)
-          .map((reply) => ({
-            id: reply.id,
-            content: reply.content,
-            date: reply.date,
-            username: reply.username,
-          }));
+        // mapping replies dengan business logic "balasan telah dihapus"
+        const replies = rawReplies.map((reply) => ({
+          id: reply.id,
+          content: reply.isDelete || reply.is_delete ? '**balasan telah dihapus**' : reply.content,
+          date: reply.date,
+          username: reply.username,
+        }));
 
         return {
           id: comment.id,
           username: comment.username,
           date: comment.date,
-          content: comment.isDelete ? '**komentar telah dihapus**' : comment.content,
+          content: comment.isDelete || comment.is_delete ? '**komentar telah dihapus**' : comment.content,
           replies,
         };
       })
