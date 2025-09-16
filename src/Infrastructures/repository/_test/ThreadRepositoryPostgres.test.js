@@ -69,36 +69,36 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
-// ========== getThreadById ==========
-describe('getThreadById', () => {
-  it('should throw NotFoundError when thread does not exist', async () => {
-    const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
-    await expect(threadRepository.getThreadbyId('thread-xxx'))
-      .rejects.toThrowError(NotFoundError);
-  });
-
-  it('should return thread data correctly', async () => {
-    const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
-    const uniqueThreadId = 'thread-get-123';
-    const fixedDate = '2025-09-16T10:00:00.000Z'; // Tentukan tanggal tetap
-
-    // Tambahkan thread dengan date tetap
-    await ThreadsTableTestHelper.addThread({
-      id: uniqueThreadId,
-      title: 'Judul Thread',
-      body: 'Isi Thread',
-      owner: 'user-123',
-      date: fixedDate,
+  // ========== getThreadById ==========
+  describe('getThreadById', () => {
+    it('should throw NotFoundError when thread does not exist', async () => {
+      const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
+      await expect(threadRepository.getThreadbyId('thread-xxx'))
+        .rejects.toThrowError(NotFoundError);
     });
 
-    const thread = await threadRepository.getThreadbyId(uniqueThreadId);
+    it('should return thread data correctly', async () => {
+      const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
+      const uniqueThreadId = 'thread-get-123';
+      const fixedDate = '2025-09-16T10:00:00.000Z'; // Tentukan tanggal tetap
 
-    expect(thread.id).toBe(uniqueThreadId);
-    expect(thread.title).toBe('Judul Thread');
-    expect(thread.body).toBe('Isi Thread');
-    expect(thread.username).toBe('dicoding');
-    expect(thread.date.toISOString ? thread.date.toISOString() : thread.date).toBe(fixedDate);
+      // Tambahkan thread dengan date tetap
+      await ThreadsTableTestHelper.addThread({
+        id: uniqueThreadId,
+        title: 'Judul Thread',
+        body: 'Isi Thread',
+        owner: 'user-123',
+        date: fixedDate,
+      });
+
+      const thread = await threadRepository.getThreadbyId(uniqueThreadId);
+
+      expect(thread.id).toBe(uniqueThreadId);
+      expect(thread.title).toBe('Judul Thread');
+      expect(thread.body).toBe('Isi Thread');
+      expect(thread.username).toBe('dicoding');
+      expect(thread.date.toISOString ? thread.date.toISOString() : thread.date).toBe(fixedDate);
+    });
   });
-});
 
 });
