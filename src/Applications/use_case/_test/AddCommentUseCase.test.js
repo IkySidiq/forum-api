@@ -49,7 +49,12 @@ describe('AddCommentUseCase', () => {
       threadId: useCasePayload.threadId,
       ownerId: useCasePayload.ownerId,
     });
-    expect(result).toStrictEqual(expectedAddedComment);
+    
+    expect(result).toStrictEqual(new AddedComment({
+      id: 'comment-123',
+      content: useCasePayload.content,
+      owner: useCasePayload.ownerId,
+    }));
 
     verifyPayloadSpy.mockRestore();
   });

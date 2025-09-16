@@ -61,7 +61,13 @@ describe('AddReplyUseCase', () => {
       commentId: useCasePayload.commentId,
       ownerId: useCasePayload.ownerId,
     });
-    expect(result).toStrictEqual(expectedAddedReply);
+    
+    expect(result).toStrictEqual(new AddedReply({
+      id: 'reply-123',
+      content: useCasePayload.content,
+      owner: useCasePayload.ownerId,
+      commentId: useCasePayload.commentId,
+    }));
 
     verifyPayloadSpy.mockRestore();
   });
