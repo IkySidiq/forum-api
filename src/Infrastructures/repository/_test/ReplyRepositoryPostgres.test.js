@@ -73,7 +73,7 @@ describe('ReplyRepositoryPostgres', () => {
   describe('getRepliesByCommentId', () => {
     it('should return all replies with correct format', async () => {
       let counter = 1;
-      const replyRepository = new ReplyRepositoryPostgres(pool, () => `${counter++}`);
+      const replyRepository = new ReplyRepositoryPostgres(pool, () => `reply-${counter++}`);
 
       const reply1 = new AddReply({
         content: 'Balasan pertama',
@@ -93,11 +93,22 @@ describe('ReplyRepositoryPostgres', () => {
       const replies = await replyRepository.getRepliesByCommentId('comment-123');
 
       expect(replies).toHaveLength(2);
-      expect(replies[0].content).toBe('Balasan pertama');
-      expect(replies[1].content).toBe('Balasan kedua');
-      expect(replies[0]).toHaveProperty('username', 'dicoding');
-      expect(replies[0]).toHaveProperty('date');
-      expect(replies[0]).toHaveProperty('isDelete'); // tambahkan check isDelete
+
+      expect(replies[0]).toStrictEqual({
+        id: expect.any(String),
+        content: 'Balasan pertama',
+        date: expect.any(Date), 
+        username: 'dicoding',
+        isDelete: false,
+      });
+
+      expect(replies[1]).toStrictEqual({
+        id: expect.any(String),
+        content: 'Balasan kedua',
+        date: expect.any(Date),
+        username: 'dicoding',
+        isDelete: false,
+      });
     });
 
     it('should return reply with isDelete true if deleted', async () => {
@@ -113,8 +124,13 @@ describe('ReplyRepositoryPostgres', () => {
       const replies = await replyRepository.getRepliesByCommentId('comment-123');
 
       expect(replies).toHaveLength(1);
-      expect(replies[0].content).toBe('Balasan sensitif'); // sekarang content mentah
-      expect(replies[0].isDelete || replies[0].is_delete).toBe(true); // cek flag delete
+      expect(replies[0]).toStrictEqual({
+        id: 'reply-123',
+        content: 'Balasan sensitif',
+        date: expect.any(Date),
+        username: 'dicoding',
+        isDelete: true,
+      });
     });
 
     it('should return empty array if no replies', async () => {
