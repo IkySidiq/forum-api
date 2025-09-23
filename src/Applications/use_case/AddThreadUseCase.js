@@ -6,8 +6,12 @@ class AddThreadUseCase {
   }
 
   async execute({ title, body, ownerId }) {
-    const addThread = new AddThread({ title, body, ownerId });
-    return this._threadRepository.addThread({ title: addThread.title, body: addThread.body, ownerId: addThread.ownerId });
+    const addThreadChecked = new AddThread({ title, body, ownerId });
+    return this._threadRepository.addThread({ 
+      title: addThreadChecked.title, 
+      body: addThreadChecked.body, 
+      ownerId: addThreadChecked.ownerId, 
+    });
   }
 }
 

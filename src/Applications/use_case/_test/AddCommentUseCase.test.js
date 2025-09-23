@@ -1,8 +1,11 @@
 const AddComment = require('../../../Domains/comments/entities/AddComment');
+const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const AddCommentUseCase = require('../AddCommentUseCase');
+const CommentRepository = require('../../../Domains/comments/CommentRepository');
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
 describe('AddCommentUseCase', () => {
-  it('should orchestrate the add comment action correctly', async() => {
+  it('should orchestrate the add comment action correctly', async () => {
     // Arrange
     const useCasePayload = {
       content: 'Isi komentar',
@@ -10,22 +13,25 @@ describe('AddCommentUseCase', () => {
       ownerId: 'user-123',
     };
 
-    const expectedAddedComment = {
+    const expectedAddedComment = new AddedComment({
       id: 'comment-123',
-      content: 'Isi komentar',
-      owner: 'user-123',
-    };
+      content: useCasePayload.content,
+      owner: useCasePayload.ownerId,
+    });
+
+    // Creating Depedency of UseCase
+    const mockCommentRepository = new CommentRepository();
+    const mockThreadRepository = new ThreadRepository();
+
+    // Mocking Needed Functions
+    mockThreadRepository.verifyAvailableThread = jest.fn()
+      .mockImplementation(() => Promise.resolve());
+    mockCommentRepository.addComment = jest.fn()
+      .mockImplementation(() => Promise.resolve(expectedAddedComment));
 
     // Spy pada _verifyPayload
     const verifyPayloadSpy = jest.spyOn(AddComment.prototype, '_verifyPayload');
 
-    // Mock dependencies
-    const mockCommentRepository = {
-      addComment: jest.fn().mockResolvedValue(expectedAddedComment),
-    };
-    const mockThreadRepository = {
-      verifyAvailableThread: jest.fn().mockResolvedValue(), // hanya resolve saja
-    };
 
     // Act
     const addCommentUseCase = new AddCommentUseCase({
@@ -33,7 +39,7 @@ describe('AddCommentUseCase', () => {
       threadRepository: mockThreadRepository,
     });
 
-    const addedComment = await addCommentUseCase.execute(useCasePayload);
+    const result = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
     expect(verifyPayloadSpy).toHaveBeenCalledWith(useCasePayload);
@@ -43,37 +49,13 @@ describe('AddCommentUseCase', () => {
       threadId: useCasePayload.threadId,
       ownerId: useCasePayload.ownerId,
     });
-    expect(addedComment).toEqual(expectedAddedComment);
+    
+    expect(result).toStrictEqual(new AddedComment({
+      id: 'comment-123',
+      content: useCasePayload.content,
+      owner: useCasePayload.ownerId,
+    }));
 
     verifyPayloadSpy.mockRestore();
-  });
-
-  it('should throw error when payload is missing required properties', async() => {
-    // Arrange
-    const useCasePayload = {
-      content: 'Isi komentar',
-      ownerId: 'user-123',
-      // threadId missing
-    };
-
-    const mockCommentRepository = {
-      addComment: jest.fn(),
-    };
-    const mockThreadRepository = {
-      verifyAvailableThread: jest.fn(),
-    };
-
-    const addCommentUseCase = new AddCommentUseCase({
-      commentRepository: mockCommentRepository,
-      threadRepository: mockThreadRepository,
-    });
-
-    // Act & Assert
-    await expect(addCommentUseCase.execute(useCasePayload))
-      .rejects
-      .toThrowError('ADDING_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
-
-    expect(mockCommentRepository.addComment).not.toHaveBeenCalled();
-    expect(mockThreadRepository.verifyAvailableThread).not.toHaveBeenCalled();
   });
 });

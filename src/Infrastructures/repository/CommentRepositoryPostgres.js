@@ -37,6 +37,8 @@ class CommentRepositoryPostgres extends CommentRepository {
     if (!result.rowCount) {
       throw new NotFoundError('Comment tidak ditemukan');
     }
+
+    return result.rows[0].is_delete;
   }
 
   async verifyAvailableComment(commentId) {
@@ -74,7 +76,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     const query = {
       text: `
         SELECT comments.id, comments.content, comments.date, comments.is_delete, 
-               users.username
+              users.username
         FROM comments
         LEFT JOIN users ON users.id = comments.owner_id
         WHERE comments.thread_id = $1
@@ -88,8 +90,9 @@ class CommentRepositoryPostgres extends CommentRepository {
     return result.rows.map((row) => ({
       id: row.id,
       username: row.username,
-      date: row.date,
-      content: row.is_delete ? '**komentar telah dihapus**' : row.content,
+      date: row.date.toISOString(),
+      content: row.content,
+      isDelete: row.is_delete,
     }));
   }
 

@@ -31,8 +31,6 @@
     "@eslint/js": "^9.35.0",
     "@types/jest": "^26.0.24",
     "eslint": "^9.35.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.23.4",
     "globals": "^16.4.0",
     "jest": "^27.0.6",

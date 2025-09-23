@@ -3,6 +3,7 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('ThreadRepositoryPostgres', () => {
   beforeEach(async() => {
@@ -49,7 +50,7 @@ describe('ThreadRepositoryPostgres', () => {
     it('should throw NotFoundError when thread does not exist', async() => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       await expect(threadRepository.verifyAvailableThread('thread-xxx'))
-        .rejects.toThrowError('Thread tidak ditemukan');
+        .rejects.toThrowError(NotFoundError);
     });
 
     it('should not throw error when thread exists', async() => {
@@ -64,35 +65,40 @@ describe('ThreadRepositoryPostgres', () => {
       });
 
       await expect(threadRepository.verifyAvailableThread(uniqueThreadId))
-        .resolves.not.toThrowError();
+        .resolves.not.toThrowError(NotFoundError);
     });
   });
 
   // ========== getThreadById ==========
   describe('getThreadById', () => {
-    it('should throw NotFoundError when thread does not exist', async() => {
+    it('should throw NotFoundError when thread does not exist', async () => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
-      await expect(threadRepository.getThreadById('thread-xxx'))
-        .rejects.toThrowError('Thread tidak ditemukan');
+      await expect(threadRepository.getThreadbyId('thread-xxx'))
+        .rejects.toThrowError(NotFoundError);
     });
 
-    it('should return thread data correctly', async() => {
+    it('should return thread data correctly', async () => {
       const threadRepository = new ThreadRepositoryPostgres(pool, () => '123');
       const uniqueThreadId = 'thread-get-123';
+      const fixedDate = '2025-09-16T10:00:00.000Z'; // Tentukan tanggal tetap
 
+      // Tambahkan thread dengan date tetap
       await ThreadsTableTestHelper.addThread({
         id: uniqueThreadId,
         title: 'Judul Thread',
         body: 'Isi Thread',
         owner: 'user-123',
+        date: fixedDate,
       });
 
-      const thread = await threadRepository.getThreadById(uniqueThreadId);
+      const thread = await threadRepository.getThreadbyId(uniqueThreadId);
 
       expect(thread.id).toBe(uniqueThreadId);
       expect(thread.title).toBe('Judul Thread');
       expect(thread.body).toBe('Isi Thread');
       expect(thread.username).toBe('dicoding');
+      expect(thread.date.toISOString ? thread.date.toISOString() : thread.date).toBe(fixedDate);
     });
   });
+
 });

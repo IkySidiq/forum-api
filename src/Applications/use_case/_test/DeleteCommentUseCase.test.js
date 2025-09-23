@@ -42,4 +42,38 @@ describe('DeleteCommentUseCase', () => {
     expect(mockCommentRepository.deleteComment)
       .toHaveBeenCalledWith(useCasePayload.commentId);
   });
+
+  it('should throw error when repository method fails', async () => {
+  // Arrange
+    const useCasePayload = {
+      commentId: 'comment-123',
+      threadId: 'thread-123',
+      ownerId: 'user-123',
+    };
+
+    const mockCommentRepository = new CommentRepository();
+    const mockThreadRepository = new ThreadRepository();
+
+    // Mocking supaya verifyAvailableThread melempar error
+    mockThreadRepository.verifyAvailableThread = jest.fn()
+      .mockRejectedValue(new Error('THREAD_NOT_FOUND'));
+    mockCommentRepository.verifyAvailableComment = jest.fn();
+    mockCommentRepository.verifyCommentOwner = jest.fn();
+    mockCommentRepository.deleteComment = jest.fn();
+
+    const deleteCommentUseCase = new DeleteCommentUseCase({
+      commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
+    });
+
+    // Act & Assert
+    await expect(deleteCommentUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('THREAD_NOT_FOUND');
+
+    // Optional: pastikan method lain tidak dipanggil
+    expect(mockCommentRepository.verifyAvailableComment).not.toHaveBeenCalled();
+    expect(mockCommentRepository.verifyCommentOwner).not.toHaveBeenCalled();
+    expect(mockCommentRepository.deleteComment).not.toHaveBeenCalled();
+  });
 });
